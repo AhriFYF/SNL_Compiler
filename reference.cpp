@@ -1006,6 +1006,11 @@ Treenode* if1(ofstream& outputFile) {
 	return tmp1;
 }
 
+// 符号表项类型
+enum class SymKind { TYPE, VAR, PROC, PARAM };
+
+
+
 // 语法树节点结构
 struct Node {
 	string type;
@@ -1017,6 +1022,23 @@ struct Node {
 	Node(string t, string n = "", string vType = "") : type(t), name(n), varType(vType) {}
 };
 
+// 域表项结构（用于结构体/记录的成员）
+struct FieldEntry {
+    string name;          // 域名
+    string type;          // 类型
+    FieldEntry* next;     // 链表指针
+    SymKind kind;
+
+    FieldEntry(const string& n, const string& t) 
+        : name(n), type(t), next(nullptr) {}
+};
+
+// 域表头结构
+struct FieldChain {
+    FieldEntry* head;     // 链表头指针
+    FieldChain() : head(nullptr) {}
+};
+
 // 符号表（支持作用域）
 class SymbolTable {
 private:
@@ -1024,7 +1046,16 @@ private:
 	int currentOffset = 7;                  	// 初始偏移量（保留7个位置）
 	SymbolEntry* scopeStack[100] = {nullptr}; 	// 作用域栈（假设最多100层）
 	SymbolEntry* currentTable = nullptr;     	// 当前符号表链表头
-
+	unordered_map<string, FieldChain*> fieldTables; // 域名 -> 域表映射
+    string KindToString(SymKind kind) {
+        switch (kind) {
+            case SymKind::TYPE: return "TYPE";
+            case SymKind::VAR: return "VAR";
+            case SymKind::PROC: return "PROC";
+            case SymKind::PARAM: return "PARAM";
+            default: return "UNKNOWN";
+        }
+    }
 public:
 	unordered_map<string, string> table;
 	SymbolTable* parent;
@@ -1046,7 +1077,7 @@ public:
 		if (parent) return parent->lookup(name);
 		return "ERROR: Undeclared variable '" + name + "'";
 	}
-	
+
 	// 进入新作用域
 	void CreateTable() {
 		currentLevel++;
@@ -1066,7 +1097,24 @@ public:
 		currentLevel--;
 	}
 
-	// 在当前符号表查找标识符（对应SearchoneTable）
+    // 进入新作用域
+    void EnterScope() {
+        currentLevel++;
+        scopeStack[currentLevel] = nullptr;
+    }
+
+    // 退出当前作用域
+    void ExitScope() {
+        SymbolEntry* p = scopeStack[currentLevel];
+        while (p) {
+            SymbolEntry* tmp = p;
+            p = p->next;
+            delete tmp;
+        }
+        currentLevel--;
+    }
+
+	// 在当前符号表查找标识符
 	bool SearchOneTable(const string& id, SymbolEntry** entry) {
 		SymbolEntry* p = scopeStack[currentLevel];
 		while (p) {
@@ -1134,7 +1182,7 @@ public:
 		return true;
 	}
 
-	// 打印符号表（调试用）
+	//打印符号表
 	void PrintSymbolTable() {
 		cout << "===== Symbol Table (Current Level: " << currentLevel << ") =====" << endl;
 		for (int lv = currentLevel; lv >= 0; lv--) {
@@ -1146,6 +1194,41 @@ public:
 				p = p->next;
 			}
 		}
+	}
+
+	bool FindField(const string& id, FieldChain* head, FieldEntry** entry) {
+		if (!head || !head->head) {
+			if (entry) *entry = nullptr;
+			return false;
+		}
+	
+		FieldEntry* p = head->head;
+		while (p) {
+			if (p->name == id) {
+				if (entry) *entry = p;
+				return true;
+			}
+			p = p->next;
+		}
+	
+		if (entry) *entry = nullptr;
+		return false;
+	}
+
+	// 添加域表（用于结构体/记录类型）
+	void AddFieldTable(const string& typeName, FieldChain* fields) {
+		fieldTables[typeName] = fields;
+	}
+
+	// 查找域表
+	FieldChain* GetFieldTable(const string& typeName) {
+		return fieldTables.count(typeName) ? fieldTables[typeName] : nullptr;
+	}
+
+	// 域表查找（封装FindField）
+	bool FindFieldInTable(const string& typeName, const string& fieldName, FieldEntry** entry) {
+		FieldChain* table = GetFieldTable(typeName);
+		return FindField(fieldName, table, entry);
 	}
 
 	~SymbolTable() {
@@ -1202,7 +1285,7 @@ Node* parseSyntaxTree(const string& filePath) {
 }
 
 
-// 修正后的语义分析函数
+// 语义分析函数
 void semanticAnalysis(Node* tree, SymbolTable* symTable, ofstream& outputFile) {
 	if (!tree) return;
 
@@ -1294,7 +1377,7 @@ void printSyntaxTree(Node* node, int depth = 0) {
     }
 }
 
-//检查符号表
+//检查符号表（test）
 void printSymbolTable(SymbolTable* table, int depth = 0) {
     if (!table) return;
 
@@ -1379,7 +1462,7 @@ int main() {
 	cout << "Semantic Analysis Results:" << endl;
 	semanticAnalysis(syntaxTree, symTable, Semantic);
 	cout << "\nSymbol Table:" << endl;
-    printSymbolTable(symTable);
+    symTable->PrintSymbolTable();
 	cout << "语义错误信息已写入: " << Semanticfile << endl;
 	
 	//目标代码生成
@@ -1389,6 +1472,33 @@ int main() {
 	Semantic.close();
 	Targetcode.close();
 
-	return 0;
+	{
+		// 符号表测试
+		cout << endl << endl << endl << "Symbol Table Test:" << endl;
+		SymbolTable symTablex;
 
+		// 进入全局作用域
+		symTablex.CreateTable();
+		symTablex.Enter("x", "INTEGER", nullptr);
+		symTablex.Enter("y", "BOOL", nullptr);
+
+		// 进入局部作用域
+		symTablex.CreateTable();
+		symTablex.Enter("i", "INTEGER", nullptr);
+		symTablex.Enter("x", "REAL", nullptr); // 错误：重复声明
+
+		symTablex.PrintSymbolTable();
+		cout << endl;
+
+		// 查找测试
+		SymbolEntry* entry;
+		if (symTablex.FindEntry("y", "up", &entry)) {
+			cout << "Found y in level " << entry->level << endl;
+		}
+
+		// 退出局部作用域
+		symTablex.DestroyTable();
+	}
+
+	return 0;
 }
