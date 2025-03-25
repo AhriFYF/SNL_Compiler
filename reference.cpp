@@ -57,27 +57,6 @@ struct Treenode {
 	string id[10];//部分标识符的值
 };
 
-//定义语法分析器的函数
-Treenode* programhead(ofstream& outputFile); 						//程序头
-Treenode* declarehead(ofstream& outputFile); 						//声明
-//Treenode* programbody(); 											//程序体 
-Treenode* typedec(ofstream& outputFile);  							//类型声明
-Treenode* vardec(ofstream& outputFile);   							//变量声明
-Treenode* procdec(ofstream& outputFile);							//过程声明
-Treenode* typedeclist(ofstream& outputFile); 						//类型声明中的部分函数
-Treenode* vardeclist(ofstream& outputFile); 						//变量声明中的部分函数
-Treenode* paramdeclist(ofstream& outputFile); 						//过程声明中的部分函数
-Treenode* paramlist(ofstream& outputFile); 							//过程声明中的形参函数
-//Treenode* procdecpart(); 											//过程声明中的变量声明
-Treenode* probody(ofstream& outputFile); 							//过程声明中的函数体,后面可以直接用作程序体
-//Treenode* stmtlist(); 											//语句列表
-Treenode* stmt(ofstream& outputFile); 								//生成一个语句节点
-Treenode* assign1(ofstream& outputFile); 							//生成赋值表达式
-Treenode* write1(ofstream& outputFile); 							//生成读写表达式
-Treenode* read1(ofstream& outputFile); 								//生成读写表达式
-Treenode* if1(ofstream& outputFile);  								//生成选择表达式
-//Treenode* stmtmore(); 											//生成更多的语句节点
-
 //全局变量
 int size1 = 0;//token序列的长度
 vector<Token> token;//token序列
@@ -94,11 +73,28 @@ string  reservedWords[21] = { "program","type","var","procedure","begin","end","
 string reservedWords1[21] = { "PROGRAM","TYPE","VAR","PROCEDURE","BEGIN","END","ARRAY","OF","RECORD","IF","THEN","ELSE",
 "FI","WHILE","DO","ENDWH","READ","WRITE","RETURN","INTEGER","CHAR" };
 
+//定义语法分析器的函数
+Treenode* programhead(ofstream& outputFile); 						//程序头
+Treenode* declarehead(ofstream& outputFile); 						//声明
+Treenode* typedec(ofstream& outputFile);  							//类型声明
+Treenode* vardec(ofstream& outputFile);   							//变量声明
+Treenode* procdec(ofstream& outputFile);							//过程声明
+Treenode* typedeclist(ofstream& outputFile); 						//类型声明中的部分函数
+Treenode* vardeclist(ofstream& outputFile); 						//变量声明中的部分函数
+Treenode* paramdeclist(ofstream& outputFile); 						//过程声明中的部分函数
+Treenode* paramlist(ofstream& outputFile); 							//过程声明中的形参函数
+Treenode* probody(ofstream& outputFile); 							//过程声明中的函数体,后面可以直接用作程序体
+Treenode* stmt(ofstream& outputFile); 								//生成一个语句节点
+Treenode* assign1(ofstream& outputFile); 							//生成赋值表达式
+Treenode* write1(ofstream& outputFile); 							//生成读写表达式
+Treenode* read1(ofstream& outputFile); 								//生成读写表达式
+Treenode* if1(ofstream& outputFile);  								//生成选择表达式
+
 
 
 //打印出错函数
 void printwrong() {
-	cout << "你输入的程序段有词法错误" << endl;
+	cout << "输入的程序段有词法错误" << endl;
 }
 
 //打印语法树的空格
@@ -742,16 +738,6 @@ Treenode* probody(ofstream& outputFile) {
 
 }
 
-////返回语句列表
-//Treenode* stmtlist() {
-//	Treenode* tmp1 = new Treenode;
-//	Treenode* tmp2 = new Treenode;
-//	tmp1 = stmt();
-//	tmp2 = stmtmore();
-//	tmp1->sibling = tmp2;
-//	return tmp1;
-//}
-
 //得到一个语句节点
 Treenode* stmt(ofstream& outputFile) {
 	if (token[subscript].value1 == "ID" || token[subscript].value1 == "CHAR") {
@@ -1006,10 +992,11 @@ Treenode* if1(ofstream& outputFile) {
 	return tmp1;
 }
 
-// 符号表项类型
-enum class SymKind { TYPE, VAR, PROC, PARAM };
 
-// 语法树节点结构
+
+// 语义分析阶段
+
+// 解析后的语法树节点结构
 struct Node {
 	string type;
 	string name;
@@ -1019,6 +1006,99 @@ struct Node {
 
 	Node(string t, string n = "", string vType = "") : type(t), name(n), varType(vType) {}
 };
+
+// 解析语法树
+Node* parseSyntaxTree(const string& filePath) {
+    ifstream file(filePath);
+    if (!file) {
+        cerr << "Error: Cannot open file " << filePath << endl;
+        return nullptr;
+    }
+
+    stack<pair<int, Node*>> nodeStack; // 维护层级和节点
+    Node* root = nullptr;
+    string line;
+
+    while (getline(file, line)) {
+        int indent = 0;
+        while (indent < line.size() && (line[indent] == ' ' || line[indent] == '\t')) {
+            indent++; // 计算缩进级别
+        }
+        line = line.substr(indent); // 去掉缩进空格
+
+        if (line.empty()) continue; // 跳过空行
+
+        istringstream iss(line);
+        string type, name, varType;
+        iss >> type >> name >> varType; // 读取类型、变量名、变量类型
+
+        Node* newNode = new Node(type, name, varType);
+
+        if (nodeStack.empty()) {
+            root = newNode; // 第一个节点作为根节点
+        } else {
+            // 维护正确的层级关系
+            while (!nodeStack.empty() && nodeStack.top().first >= indent) {
+                nodeStack.pop();
+            }
+            if (!nodeStack.empty()) {
+                nodeStack.top().second->children.push_back(newNode);
+            }
+        }
+
+        nodeStack.push({indent, newNode});
+    }
+
+    file.close();
+    return root;
+}
+
+//检查语法树
+void printSyntaxTree(Node* node, int depth = 0) {
+    if (!node) return;
+
+    // 根据层级深度添加缩进
+    for (int i = 0; i < depth; ++i) {
+        cout << "    "; // 每层缩进4个空格
+    }
+
+    // 打印当前节点信息
+    cout << node->type;
+    if (!node->name.empty()) cout << " (" << node->name << ")";
+    if (!node->varType.empty()) cout << " : " << node->varType;
+    cout << endl;
+
+    // 递归打印子节点
+    for (auto child : node->children) {
+        printSyntaxTree(child, depth + 1);
+    }
+}
+
+// 打印解析后的语法树
+void PrintSyntaxTree(Node* node, int depth = 0, bool isLastChild = true) {
+    if (!node) return;
+
+    // 打印当前节点信息（带缩进和连接线）
+    for (int i = 0; i < depth - 1; ++i) {
+        cout << "    ";
+    }
+    if (depth > 0) {
+        cout << (isLastChild ? "└── " : "├── ");
+    }
+
+    cout << node->type;
+    if (!node->name.empty()) cout << " (" << node->name << ")";
+    if (!node->varType.empty()) cout << " : " << node->varType;
+    cout << endl;
+
+    // 递归打印子节点
+    for (size_t i = 0; i < node->children.size(); ++i) {
+        PrintSyntaxTree(node->children[i], depth + 1, i == node->children.size() - 1);
+    }
+}
+
+// 符号表项类型
+enum class SymKind { TYPE, VAR, PROC, PARAM };
 
 // 域表项结构（用于结构体/记录的成员）
 struct FieldEntry {
@@ -1274,145 +1354,6 @@ public:
 	}
 };
 
-// 解析语法树
-Node* parseSyntaxTree(const string& filePath) {
-    ifstream file(filePath);
-    if (!file) {
-        cerr << "Error: Cannot open file " << filePath << endl;
-        return nullptr;
-    }
-
-    stack<pair<int, Node*>> nodeStack; // 维护层级和节点
-    Node* root = nullptr;
-    string line;
-
-    while (getline(file, line)) {
-        int indent = 0;
-        while (indent < line.size() && (line[indent] == ' ' || line[indent] == '\t')) {
-            indent++; // 计算缩进级别
-        }
-        line = line.substr(indent); // 去掉缩进空格
-
-        if (line.empty()) continue; // 跳过空行
-
-        istringstream iss(line);
-        string type, name, varType;
-        iss >> type >> name >> varType; // 读取类型、变量名、变量类型
-
-        Node* newNode = new Node(type, name, varType);
-
-        if (nodeStack.empty()) {
-            root = newNode; // 第一个节点作为根节点
-        } else {
-            // 维护正确的层级关系
-            while (!nodeStack.empty() && nodeStack.top().first >= indent) {
-                nodeStack.pop();
-            }
-            if (!nodeStack.empty()) {
-                nodeStack.top().second->children.push_back(newNode);
-            }
-        }
-
-        nodeStack.push({indent, newNode});
-    }
-
-    file.close();
-    return root;
-}
-
-
-// 语义分析函数
-void semanticAnalysis(Node* tree, SymbolTable* symTable, ofstream& outputFile) {
-	if (!tree) return;
-
-	// 处理类型和变量声明
-	if (tree->type == "TYPE" || tree->type == "VAR") {
-		for (auto child : tree->children) {
-			if (!symTable->insert(child->name, child->varType, outputFile)) {
-				outputFile << "Error: Variable '" << child->name << "' redeclared in the same scope." << endl;
-			}
-		}
-	}
-
-	// 处理过程声明
-	if (tree->type == "PROCEDURE") {
-		SymbolTable* newScope = new SymbolTable(symTable);
-		for (auto child : tree->children) {
-			semanticAnalysis(child, newScope, outputFile);
-		}
-	}
-
-	// 处理语句块
-	if (tree->type == "StmLK") {
-		for (auto stmt : tree->children) {
-			if (stmt->type == "READ" || stmt->type == "WRITE") {
-				string res = symTable->lookup(stmt->name);
-				if (res.find("ERROR") != string::npos) {
-					outputFile << res << endl;
-				}
-			}
-
-			// 赋值语句处理
-			if (stmt->type == "AssignK") {
-				string leftType = symTable->lookup(stmt->leftVar);
-				string rightType = symTable->lookup(stmt->rightVar);
-
-				if (leftType.find("ERROR") != string::npos) {
-					outputFile << leftType << endl;
-				}
-				if (rightType.find("ERROR") != string::npos) {
-					outputFile << rightType << endl;
-				}
-				if (leftType != rightType && leftType.find("ERROR") == string::npos && rightType.find("ERROR") == string::npos) {
-					outputFile << "Error: Type mismatch in assignment of '" << stmt->leftVar << "'." << endl;
-				}
-			}
-
-			// 条件语句处理
-			if (stmt->type == "IF" || stmt->type == "WHILE") {
-				string condType = symTable->lookup(stmt->children[0]->name);
-				if (condType != "BOOLEAN") {
-					outputFile << "Error: Condition expression must be of BOOLEAN type." << endl;
-				}
-			}
-
-			// 过程调用处理
-			if (stmt->type == "CALL") {
-				string procType = symTable->lookup(stmt->name);
-				if (procType != "PROCEDURE") {
-					outputFile << "Error: Identifier '" << stmt->name << "' is not a procedure." << endl;
-				}
-			}
-		}
-	}
-
-	// 递归遍历子节点
-	for (auto child : tree->children) {
-		semanticAnalysis(child, symTable, outputFile);
-	}
-}
-
-//检查语法树
-void printSyntaxTree(Node* node, int depth = 0) {
-    if (!node) return;
-
-    // 根据层级深度添加缩进
-    for (int i = 0; i < depth; ++i) {
-        cout << "    "; // 每层缩进4个空格
-    }
-
-    // 打印当前节点信息
-    cout << node->type;
-    if (!node->name.empty()) cout << " (" << node->name << ")";
-    if (!node->varType.empty()) cout << " : " << node->varType;
-    cout << endl;
-
-    // 递归打印子节点
-    for (auto child : node->children) {
-        printSyntaxTree(child, depth + 1);
-    }
-}
-
 // 构建符号表的核心函数
 void BuildSymbolTable(Node* node, SymbolTable& symTable) {
     if (!node) return;
@@ -1504,39 +1445,79 @@ void printSymbolTable(SymbolTable* table, int depth = 0) {
     }
 }
 
-////得到更多的语句节点
-//Treenode* stmtmore() {
-//	if (token[subscript].value2 == "END" || token[subscript].value2 == "ENDWH") {
-//		subscript = subscript + 1;
-//		return NULL;
-//	}
-//	else {
-//
-//	}
-//}
+// 语义分析阶段
+// 语义分析函数
+void semanticAnalysis(Node* tree, SymbolTable* symTable, ofstream& outputFile) {
+	if (!tree) return;
 
-// 打印语法树（递归实现）
-void PrintSyntaxTree(Node* node, int depth = 0, bool isLastChild = true) {
-    if (!node) return;
+	// 处理类型和变量声明
+	if (tree->type == "TYPE" || tree->type == "VAR") {
+		for (auto child : tree->children) {
+			if (!symTable->insert(child->name, child->varType, outputFile)) {
+				outputFile << "Error: Variable '" << child->name << "' redeclared in the same scope." << endl;
+			}
+		}
+	}
 
-    // 打印当前节点信息（带缩进和连接线）
-    for (int i = 0; i < depth - 1; ++i) {
-        cout << "    ";
-    }
-    if (depth > 0) {
-        cout << (isLastChild ? "└── " : "├── ");
-    }
+	// 处理过程声明
+	if (tree->type == "PROCEDURE") {
+		SymbolTable* newScope = new SymbolTable(symTable);
+		for (auto child : tree->children) {
+			semanticAnalysis(child, newScope, outputFile);
+		}
+	}
 
-    cout << node->type;
-    if (!node->name.empty()) cout << " (" << node->name << ")";
-    if (!node->varType.empty()) cout << " : " << node->varType;
-    cout << endl;
+	// 处理语句块
+	if (tree->type == "StmLK") {
+		for (auto stmt : tree->children) {
+			if (stmt->type == "READ" || stmt->type == "WRITE") {
+				string res = symTable->lookup(stmt->name);
+				if (res.find("ERROR") != string::npos) {
+					outputFile << res << endl;
+				}
+			}
 
-    // 递归打印子节点
-    for (size_t i = 0; i < node->children.size(); ++i) {
-        PrintSyntaxTree(node->children[i], depth + 1, i == node->children.size() - 1);
-    }
+			// 赋值语句处理
+			if (stmt->type == "AssignK") {
+				string leftType = symTable->lookup(stmt->leftVar);
+				string rightType = symTable->lookup(stmt->rightVar);
+
+				if (leftType.find("ERROR") != string::npos) {
+					outputFile << leftType << endl;
+				}
+				if (rightType.find("ERROR") != string::npos) {
+					outputFile << rightType << endl;
+				}
+				if (leftType != rightType && leftType.find("ERROR") == string::npos && rightType.find("ERROR") == string::npos) {
+					outputFile << "Error: Type mismatch in assignment of '" << stmt->leftVar << "'." << endl;
+				}
+			}
+
+			// 条件语句处理
+			if (stmt->type == "IF" || stmt->type == "WHILE") {
+				string condType = symTable->lookup(stmt->children[0]->name);
+				if (condType != "BOOLEAN") {
+					outputFile << "Error: Condition expression must be of BOOLEAN type." << endl;
+				}
+			}
+
+			// 过程调用处理
+			if (stmt->type == "CALL") {
+				string procType = symTable->lookup(stmt->name);
+				if (procType != "PROCEDURE") {
+					outputFile << "Error: Identifier '" << stmt->name << "' is not a procedure." << endl;
+				}
+			}
+		}
+	}
+
+	// 递归遍历子节点
+	for (auto child : tree->children) {
+		semanticAnalysis(child, symTable, outputFile);
+	}
 }
+
+
 
 // 从文件读取 SNL 源代码
 string readFile(const string& filename) {
@@ -1589,8 +1570,8 @@ int main() {
 	//语法分析器
 	Treenode* root = program(Syntax);
 
-	//语义分析
-	Node* syntaxTree = parseSyntaxTree(Syntaxfile);
+	//语义分析-符号表管理
+	Node* syntaxTree = parseSyntaxTree(Syntaxfile);						//解析语法树
 	//PrintSyntaxTree(syntaxTree);										//打印解析后的语法树
 	SymbolTable* symTable = new SymbolTable();
 	BuildSymbolTable(syntaxTree, *symTable);
@@ -1598,6 +1579,8 @@ int main() {
 	cout << "Symbol Table:" << endl;
 	symTable->PrintSymbolTable();
 	cout << "\nSemantic Analysis Results:" << endl;
+
+	//语义分析-语义检查
 	semanticAnalysis(syntaxTree, symTable, Semantic);
 	cout << "语义错误信息已写入: " << Semanticfile << endl;
 	
@@ -1607,34 +1590,6 @@ int main() {
 	Syntax.close();
 	Semantic.close();
 	Targetcode.close();
-
-	{
-		// 符号表测试
-		cout << endl << endl << endl << "Symbol Table Test:" << endl;
-		SymbolTable symTablex;
-
-		// 进入全局作用域
-		symTablex.CreateTable();
-		symTablex.Enter("x", "INTEGER", nullptr);
-		symTablex.Enter("y", "BOOL", nullptr);
-
-		// 进入局部作用域
-		symTablex.CreateTable();
-		symTablex.Enter("i", "INTEGER", nullptr);
-		symTablex.Enter("x", "REAL", nullptr); // 错误：重复声明
-
-		symTablex.PrintSymbolTable();
-		cout << endl;
-
-		// 查找测试
-		SymbolEntry* entry;
-		if (symTablex.FindEntry("y", "up", &entry)) {
-			cout << "Found y in level " << entry->level << endl;
-		}
-
-		// 退出局部作用域
-		symTablex.DestroyTable();
-	}
 
 	return 0;
 }
