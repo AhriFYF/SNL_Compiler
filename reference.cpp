@@ -118,7 +118,6 @@ void printtoken(ofstream& outputFile, vector<Token>token) {
 	}
 	cout << token[size1 - 1].value1 << "," << token[size1 - 1].value2 << endl << "EOF";
 	outputFile << token[size1 - 1].value1 << "," << token[size1 - 1].value2 << endl << "EOF";
-
 }
 
 //通过一个连续字符串,生成token序列,词法分析器的核心程序
@@ -1020,6 +1019,12 @@ struct Node {
 
 // 符号表（支持作用域）
 class SymbolTable {
+private:
+	int currentLevel = 0;                   	// 当前作用域层级
+	int currentOffset = 7;                  	// 初始偏移量（保留7个位置）
+	SymbolEntry* scopeStack[100] = {nullptr}; 	// 作用域栈（假设最多100层）
+	SymbolEntry* currentTable = nullptr;     	// 当前符号表链表头
+
 public:
 	unordered_map<string, string> table;
 	SymbolTable* parent;
@@ -1040,6 +1045,113 @@ public:
 		if (table.find(name) != table.end()) return table[name];
 		if (parent) return parent->lookup(name);
 		return "ERROR: Undeclared variable '" + name + "'";
+	}
+	
+	// 进入新作用域
+	void CreateTable() {
+		currentLevel++;
+		currentOffset = 7;  // 重置偏移量
+		scopeStack[currentLevel] = nullptr; // 初始化新层符号表
+	}
+
+	// 退出当前作用域
+	void DestroyTable() {
+		// 释放当前层符号表内存
+		SymbolEntry* p = scopeStack[currentLevel];
+		while (p) {
+			SymbolEntry* tmp = p;
+			p = p->next;
+			delete tmp;
+		}
+		currentLevel--;
+	}
+
+	// 在当前符号表查找标识符（对应SearchoneTable）
+	bool SearchOneTable(const string& id, SymbolEntry** entry) {
+		SymbolEntry* p = scopeStack[currentLevel];
+		while (p) {
+			if (p->name == id) {
+				if (entry) *entry = p;
+				return true;
+			}
+			p = p->next;
+		}
+		return false;
+	}
+
+	// 跨作用域查找标识符（对应FindEntry，flag控制方向）
+	bool FindEntry(const string& id, const string& flag, SymbolEntry** entry) {
+		if (flag == "one") {
+			return SearchOneTable(id, entry); // 仅查当前表
+		}
+
+		// 向上查找（up）
+		if (flag == "up") {
+			for (int lv = currentLevel; lv >= 0; lv--) {
+				SymbolEntry* p = scopeStack[lv];
+				while (p) {
+					if (p->name == id) {
+						if (entry) *entry = p;
+						return true;
+					}
+					p = p->next;
+				}
+			}
+		} 
+		// 向下查找（down）
+		else if (flag == "down") {
+			for (int lv = currentLevel; lv < 100 && scopeStack[lv]; lv++) {
+				SymbolEntry* p = scopeStack[lv];
+				while (p) {
+					if (p->name == id) {
+						if (entry) *entry = p;
+						return true;
+					}
+					p = p->next;
+				}
+			}
+		}
+		return false;
+	}
+
+	// 登记标识符（对应Enter函数）
+	bool Enter(const string& id, const string& type, SymbolEntry** entry) {
+		// 检查重复声明
+		if (SearchOneTable(id, nullptr)) {
+			cerr << "Error: Duplicate declaration of '" << id << "' in scope level " << currentLevel << endl;
+			return false;
+		}
+
+		// 创建新符号表项
+		SymbolEntry* newEntry = new SymbolEntry(id, type, currentLevel, currentOffset);
+		currentOffset++; // 更新偏移量
+
+		// 插入链表头部
+		newEntry->next = scopeStack[currentLevel];
+		scopeStack[currentLevel] = newEntry;
+
+		if (entry) *entry = newEntry;
+		return true;
+	}
+
+	// 打印符号表（调试用）
+	void PrintSymbolTable() {
+		cout << "===== Symbol Table (Current Level: " << currentLevel << ") =====" << endl;
+		for (int lv = currentLevel; lv >= 0; lv--) {
+			cout << "--- Level " << lv << " ---" << endl;
+			SymbolEntry* p = scopeStack[lv];
+			while (p) {
+				cout << "Name: " << p->name << " | Type: " << p->type 
+						<< " | Offset: " << p->offset << endl;
+				p = p->next;
+			}
+		}
+	}
+
+	~SymbolTable() {
+		while (currentLevel >= 0) {
+			DestroyTable();
+		}
 	}
 };
 
