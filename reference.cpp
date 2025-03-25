@@ -451,9 +451,9 @@ Treenode* program(ofstream& outputFile) {
 		cout << "Prok" << endl;
 		outputFile << "Prok" << endl;
 		root->idchild = 3;
-		root->child[0] = programhead(outputFile);
-		root->child[1] = declarehead(outputFile);
-		root->child[2] = probody(outputFile);
+		root->child[0] = programhead(outputFile);		//创建程序头头部分析函数节点
+		root->child[1] = declarehead(outputFile);		//创建程序声明函数节点
+		root->child[2] = probody(outputFile);			//过程声明中的函数体
 		root->sibling = NULL;
 		root->nodekind = "Prok";//节点类型为根节点
 		if (gettoken(subscript).value1 == "DOT") {
@@ -1009,8 +1009,6 @@ Treenode* if1(ofstream& outputFile) {
 // 符号表项类型
 enum class SymKind { TYPE, VAR, PROC, PARAM };
 
-
-
 // 语法树节点结构
 struct Node {
 	string type;
@@ -1047,6 +1045,7 @@ private:
 	SymbolEntry* scopeStack[100] = {nullptr}; 	// 作用域栈（假设最多100层）
 	SymbolEntry* currentTable = nullptr;     	// 当前符号表链表头
 	unordered_map<string, FieldChain*> fieldTables; // 域名 -> 域表映射
+
     string KindToString(SymKind kind) {
         switch (kind) {
             case SymKind::TYPE: return "TYPE";
@@ -1056,11 +1055,65 @@ private:
             default: return "UNKNOWN";
         }
     }
+
 public:
 	unordered_map<string, string> table;
 	SymbolTable* parent;
 
 	SymbolTable(SymbolTable* p = nullptr) : parent(p) {}
+
+    // 进入新作用域
+    void EnterScope() {
+        currentLevel++;
+        scopeStack[currentLevel] = nullptr;
+    }
+
+    // 退出当前作用域
+    void ExitScope() {
+        SymbolEntry* p = scopeStack[currentLevel];
+        while (p) {
+            SymbolEntry* tmp = p;
+            p = p->next;
+            delete tmp;
+        }
+        currentLevel--;
+    }
+
+    // 添加符号到当前作用域
+    bool AddSymbol(const string& name, SymKind kind, const string& type) {
+        // 检查重复声明
+        if (LookupCurrentScope(name)) {
+            cerr << "Error: Duplicate declaration '" << name << "' in level " << currentLevel << endl;
+            return false;
+        }
+
+        SymbolEntry* entry = new SymbolEntry(name, type, currentLevel, currentOffset);
+        entry->next = scopeStack[currentLevel];
+        scopeStack[currentLevel] = entry;
+        return true;
+    }
+
+    // 在当前作用域查找
+    SymbolEntry* LookupCurrentScope(const string& name) {
+        SymbolEntry* p = scopeStack[currentLevel];
+        while (p) {
+            if (p->name == name) return p;
+            p = p->next;
+        }
+        return nullptr;
+    }
+
+    // 跨作用域查找（优先当前作用域）
+    SymbolEntry* Lookup(const string& name) {
+        for (int lv = currentLevel; lv >= 0; lv--) {
+            SymbolEntry* p = scopeStack[lv];
+            while (p) {
+                if (p->name == name) return p;
+                p = p->next;
+            }
+        }
+        return nullptr;
+    }
 
 	bool insert(const string& name, const string& type, ofstream& outputFile) {
 		if (table.find(name) != table.end()) {
@@ -1096,23 +1149,6 @@ public:
 		}
 		currentLevel--;
 	}
-
-    // 进入新作用域
-    void EnterScope() {
-        currentLevel++;
-        scopeStack[currentLevel] = nullptr;
-    }
-
-    // 退出当前作用域
-    void ExitScope() {
-        SymbolEntry* p = scopeStack[currentLevel];
-        while (p) {
-            SymbolEntry* tmp = p;
-            p = p->next;
-            delete tmp;
-        }
-        currentLevel--;
-    }
 
 	// 在当前符号表查找标识符
 	bool SearchOneTable(const string& id, SymbolEntry** entry) {
@@ -1377,6 +1413,82 @@ void printSyntaxTree(Node* node, int depth = 0) {
     }
 }
 
+// 构建符号表的核心函数
+void BuildSymbolTable(Node* node, SymbolTable& symTable) {
+    if (!node) return;
+
+    // 处理不同类型的节点
+    if (node->type == "Prok") {
+        // 程序根节点
+        for (auto child : node->children) {
+            BuildSymbolTable(child, symTable);
+        }
+    }
+    else if (node->type == "PheadK") {
+        // 程序头（可选登记程序名）
+        if (!node->name.empty()) {
+            symTable.AddSymbol(node->name, SymKind::PROC, "PROGRAM");
+        }
+    }
+    else if (node->type == "TYPE") {
+        // 类型声明
+        for (auto child : node->children) {
+            if (child->type == "Deck") {
+                symTable.AddSymbol(child->name, SymKind::TYPE, child->varType);
+            }
+        }
+    }
+    else if (node->type == "VAR") {
+        // 变量声明
+        for (auto child : node->children) {
+            if (child->type == "Deck") {
+                // 处理多个变量声明（如 "INTEGER v1 v2"）
+                istringstream iss(child->name);
+                string varName;
+                while (iss >> varName) {
+                    symTable.AddSymbol(varName, SymKind::VAR, child->varType);
+                }
+            }
+        }
+    }
+    else if (node->type == "PROCEDURE") {
+        // 过程声明
+        if (!node->name.empty()) {
+            symTable.AddSymbol(node->name, SymKind::PROC, "PROCEDURE");
+        }
+
+        // 进入新作用域
+        symTable.EnterScope();
+
+        // 处理参数和局部变量
+        for (auto child : node->children) {
+            if (child->type == "DecK") {
+                // 参数声明
+                symTable.AddSymbol(child->name, SymKind::PARAM, child->varType);
+            }
+            else if (child->type == "VAR") {
+                BuildSymbolTable(child, symTable);
+            }
+        }
+
+        // 处理过程体
+        for (auto child : node->children) {
+            if (child->type != "DecK" && child->type != "VAR") {
+                BuildSymbolTable(child, symTable);
+            }
+        }
+
+        // 退出作用域
+        symTable.ExitScope();
+    }
+    else {
+        // 其他节点（语句等）继续递归
+        for (auto child : node->children) {
+            BuildSymbolTable(child, symTable);
+        }
+    }
+}
+
 //检查符号表（test）
 void printSymbolTable(SymbolTable* table, int depth = 0) {
     if (!table) return;
@@ -1402,6 +1514,29 @@ void printSymbolTable(SymbolTable* table, int depth = 0) {
 //
 //	}
 //}
+
+// 打印语法树（递归实现）
+void PrintSyntaxTree(Node* node, int depth = 0, bool isLastChild = true) {
+    if (!node) return;
+
+    // 打印当前节点信息（带缩进和连接线）
+    for (int i = 0; i < depth - 1; ++i) {
+        cout << "    ";
+    }
+    if (depth > 0) {
+        cout << (isLastChild ? "└── " : "├── ");
+    }
+
+    cout << node->type;
+    if (!node->name.empty()) cout << " (" << node->name << ")";
+    if (!node->varType.empty()) cout << " : " << node->varType;
+    cout << endl;
+
+    // 递归打印子节点
+    for (size_t i = 0; i < node->children.size(); ++i) {
+        PrintSyntaxTree(node->children[i], depth + 1, i == node->children.size() - 1);
+    }
+}
 
 // 从文件读取 SNL 源代码
 string readFile(const string& filename) {
@@ -1456,13 +1591,14 @@ int main() {
 
 	//语义分析
 	Node* syntaxTree = parseSyntaxTree(Syntaxfile);
+	//PrintSyntaxTree(syntaxTree);										//打印解析后的语法树
 	SymbolTable* symTable = new SymbolTable();
-
-	cout << "\n程序经过语义分析器之后的语义错误信息为和符号表为:" << endl;
-	cout << "Semantic Analysis Results:" << endl;
+	BuildSymbolTable(syntaxTree, *symTable);
+	cout << "\n程序经过语义分析器之后的符号表和语义错误信息为:" << endl;
+	cout << "Symbol Table:" << endl;
+	symTable->PrintSymbolTable();
+	cout << "\nSemantic Analysis Results:" << endl;
 	semanticAnalysis(syntaxTree, symTable, Semantic);
-	cout << "\nSymbol Table:" << endl;
-    symTable->PrintSymbolTable();
 	cout << "语义错误信息已写入: " << Semanticfile << endl;
 	
 	//目标代码生成
