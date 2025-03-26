@@ -423,78 +423,6 @@ std::string SymbolTable::lookup(const std::string& name) {
     return "ERROR: Undeclared variable '" + name + "'";
 }
 
-// 语义分析阶段
-// 语义分析函数
-void semanticAnalysis(Node* tree, SymbolTable* symTable, ofstream& outputFile) {
-	if (!tree) return;
-
-	// 处理类型和变量声明
-	if (tree->type == "TYPE" || tree->type == "VAR") {
-		for (auto child : tree->children) {
-			if (!symTable->insert(child->name, child->varType, outputFile)) {
-				outputFile << "Error: Variable '" << child->name << "' redeclared in the same scope." << endl;
-			}
-		}
-	}
-
-	// 处理过程声明
-	if (tree->type == "PROCEDURE") {
-		SymbolTable* newScope = new SymbolTable(symTable);
-		for (auto child : tree->children) {
-			semanticAnalysis(child, newScope, outputFile);
-		}
-	}
-
-	// 处理语句块
-	if (tree->type == "StmLK") {
-		for (auto stmt : tree->children) {
-			if (stmt->type == "READ" || stmt->type == "WRITE") {
-				string res = symTable->lookup(stmt->name);
-				if (res.find("ERROR") != string::npos) {
-					outputFile << res << endl;
-				}
-			}
-
-			// 赋值语句处理
-			if (stmt->type == "AssignK") {
-				string leftType = symTable->lookup(stmt->leftVar);
-				string rightType = symTable->lookup(stmt->rightVar);
-
-				if (leftType.find("ERROR") != string::npos) {
-					outputFile << leftType << endl;
-				}
-				if (rightType.find("ERROR") != string::npos) {
-					outputFile << rightType << endl;
-				}
-				if (leftType != rightType && leftType.find("ERROR") == string::npos && rightType.find("ERROR") == string::npos) {
-					outputFile << "Error: Type mismatch in assignment of '" << stmt->leftVar << "'." << endl;
-				}
-			}
-
-			// 条件语句处理
-			if (stmt->type == "IF" || stmt->type == "WHILE") {
-				string condType = symTable->lookup(stmt->children[0]->name);
-				if (condType != "BOOLEAN") {
-					outputFile << "Error: Condition expression must be of BOOLEAN type." << endl;
-				}
-			}
-
-			// 过程调用处理
-			if (stmt->type == "CALL") {
-				string procType = symTable->lookup(stmt->name);
-				if (procType != "PROCEDURE") {
-					outputFile << "Error: Identifier '" << stmt->name << "' is not a procedure." << endl;
-				}
-			}
-		}
-	}
-
-	// 递归遍历子节点
-	for (auto child : tree->children) {
-		semanticAnalysis(child, symTable, outputFile);
-	}
-}
-
 // 构建符号表的核心函数
 void BuildSymbolTable(Node* node, SymbolTable& symTable) {
     if (!node) return;
@@ -570,5 +498,77 @@ void BuildSymbolTable(Node* node, SymbolTable& symTable) {
         for (auto child : node->children) {
             BuildSymbolTable(child, symTable);
         }
+    }
+}
+
+// 语义分析阶段
+// 语义分析函数
+void semanticAnalysis(Node* tree, SymbolTable* symTable, ofstream& outputFile) {
+    if (!tree) return;
+
+    // 处理类型和变量声明
+    if (tree->type == "TYPE" || tree->type == "VAR") {
+        for (auto child : tree->children) {
+            if (!symTable->insert(child->name, child->varType, outputFile)) {
+                outputFile << "Error: Variable '" << child->name << "' redeclared in the same scope." << endl;
+            }
+        }
+    }
+
+    // 处理过程声明
+    if (tree->type == "PROCEDURE") {
+        SymbolTable* newScope = new SymbolTable(symTable);
+        for (auto child : tree->children) {
+            semanticAnalysis(child, newScope, outputFile);
+        }
+    }
+
+    // 处理语句块
+    if (tree->type == "StmLK") {
+        for (auto stmt : tree->children) {
+            if (stmt->type == "READ" || stmt->type == "WRITE") {
+                string res = symTable->lookup(stmt->name);
+                if (res.find("ERROR") != string::npos) {
+                    outputFile << res << endl;
+                }
+            }
+
+            // 赋值语句处理
+            if (stmt->type == "AssignK") {
+                string leftType = symTable->lookup(stmt->leftVar);
+                string rightType = symTable->lookup(stmt->rightVar);
+
+                if (leftType.find("ERROR") != string::npos) {
+                    outputFile << leftType << endl;
+                }
+                if (rightType.find("ERROR") != string::npos) {
+                    outputFile << rightType << endl;
+                }
+                if (leftType != rightType && leftType.find("ERROR") == string::npos && rightType.find("ERROR") == string::npos) {
+                    outputFile << "Error: Type mismatch in assignment of '" << stmt->leftVar << "'." << endl;
+                }
+            }
+
+            // 条件语句处理
+            if (stmt->type == "IF" || stmt->type == "WHILE") {
+                string condType = symTable->lookup(stmt->children[0]->name);
+                if (condType != "BOOLEAN") {
+                    outputFile << "Error: Condition expression must be of BOOLEAN type." << endl;
+                }
+            }
+
+            // 过程调用处理
+            if (stmt->type == "CALL") {
+                string procType = symTable->lookup(stmt->name);
+                if (procType != "PROCEDURE") {
+                    outputFile << "Error: Identifier '" << stmt->name << "' is not a procedure." << endl;
+                }
+            }
+        }
+    }
+
+    // 递归遍历子节点
+    for (auto child : tree->children) {
+        semanticAnalysis(child, symTable, outputFile);
     }
 }

@@ -1,11 +1,11 @@
 ﻿#include "main.h"
 
 //全局变量
-string SMLinputfile = "C:\\Users\\Fangyufan\\OneDrive\\Desktop\\test.txt";
-string Lexicalfile = "C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Lexical Analysis.txt";
-string Syntaxfile = "C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Syntax Analysis.txt";
-string Semanticfile = "C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Semantic Analysis.txt";
-string Targetcodefile = "C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Target code generation.txt";
+string SMLinputfile = "text\\input.txt";
+string Lexicalfile = "text\\Lexical Analysis.txt";
+string Syntaxfile = "text\\Syntax Analysis.txt";
+string Semanticfile = "text\\Semantic Analysis.txt";
+string Targetcodefile = "text\\Target code generation.txt";
 
 int size1 = 0;			//token序列的长度
 vector<Token> token;	//token序列

@@ -1,0 +1,67 @@
+reserved word,PROGRAM
+CHAR,p
+reserved word,TYPE
+ID,t1
+EQ,=
+reserved word,INTEGER
+SEMI,;
+reserved word,VAR
+reserved word,INTEGER
+ID,v1
+SEMI,;
+reserved word,VAR
+reserved word,INTEGER
+ID,v2
+SEMI,;
+reserved word,PROCEDURE
+CHAR,q
+LPAREN,(
+reserved word,INTEGER
+CHAR,i
+RPAREN,)
+SEMI,;
+reserved word,VAR
+reserved word,INTEGER
+CHAR,a
+SEMI,;
+reserved word,BEGIN
+CHAR,a
+ASSIGN,:=
+CHAR,i
+SEMI,;
+reserved word,WRITE
+LPAREN,(
+CHAR,a
+RPAREN,)
+reserved word,END
+reserved word,BEGIN
+reserved word,READ
+LPAREN,(
+ID,v1
+RPAREN,)
+SEMI,;
+reserved word,IF
+ID,v1
+LT,<
+NUM,10
+reserved word,THEN
+ID,v1
+ASSIGN,:=
+ID,v1
+PLUS,+
+NUM,10
+reserved word,ELSE
+ID,v1
+ASSIGN,:=
+ID,v1
+MINUS,-
+NUM,10
+reserved word,FI
+SEMI,;
+CHAR,q
+LPAREN,(
+ID,v1
+RPAREN,)
+reserved word,END
+DOT,.
+EOF

@@ -1,0 +1,38 @@
+Prok
+    PheadK p
+    TYPE
+        Deck INTEGER t1
+    VAR
+        Deck INTEGER v1
+        Deck INTEGER v2
+    PROCEDURE
+        HDeck q
+            Deck value param INTEGER i
+            VAR
+                Deck INTEGER a
+            StmLK
+                StmtK AssignK
+                    ExpK a IdK
+                    ExpK i IdK
+                StmtK WRITE
+                    ExpK a IdK
+    StmLK
+        StmtK READ
+            ExpK v1 IdK
+        StmtK IF
+            ExpK v1 IdK
+            ExpK OP <
+            ExpK const 10
+            StmtK THEN
+                ExpK v1 IdK
+                ExpK v1 IdK
+                ExpK OP +
+                ExpK const 10
+            StmtK ELSE
+                ExpK v1 IdK
+                ExpK v1 IdK
+                ExpK OP -
+                ExpK const 10
+        StmtK CALL
+            ExpK q IdK
+            ExpK v1 IdK
