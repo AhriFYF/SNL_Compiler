@@ -4,6 +4,7 @@
 string SMLinputfile = "text\\input.txt";
 string Lexicalfile = "text\\Lexical Analysis.txt";
 string Syntaxfile = "text\\Syntax Analysis.txt";
+string Symboltablefile = "text\\Symbol table.txt";
 string Semanticfile = "text\\Semantic Analysis.txt";
 string Targetcodefile = "text\\Target code generation.txt";
 
@@ -44,8 +45,10 @@ int main() {
 	string input = readFile(SMLinputfile);
 	ofstream Lexical(Lexicalfile);
 	ofstream Syntax(Syntaxfile);
+	ofstream Symboltable(Symboltablefile);
 	ofstream Semantic(Semanticfile);
 	ofstream Targetcode(Targetcodefile);
+
 	if (!Lexical) {
 		cerr << "无法创建文件: " << Lexicalfile << endl;
 		return 1;
@@ -83,9 +86,9 @@ int main() {
 	BuildSymbolTable(syntaxTree, *symTable);
 	cout << "\n程序经过语义分析器之后的符号表和语义错误信息为:" << endl;
 	cout << "Symbol Table:" << endl;
-	symTable->PrintSymbolTable();
+	symTable->PrintSymbolTable(Symboltable);
+	cout << "符号表已写入: " << Symboltablefile << endl;
 	cout << "\nSemantic Analysis Results:" << endl;
-
 	//语义分析-语义检查
 	semanticAnalysis(syntaxTree, symTable, Semantic);
 	cout << "语义错误信息已写入: " << Semanticfile << endl;

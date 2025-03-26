@@ -1,5 +1,6 @@
 #include "main.h"
 
+// 语义分析阶段
 // 解析语法树
 Node* parseSyntaxTree(const string& filePath) {
 	ifstream file(filePath);
@@ -138,9 +139,9 @@ void SymbolTable::ExitScope() {
 }
 
 // 添加变量标识符
-bool SymbolTable::AddSymbol(const std::string& type, SymKind kind, const std::string& name) {
+bool SymbolTable::AddSymbol(const string& type, SymKind kind, const string& name) {
     if (LookupCurrentScope(name)) {
-        std::cerr << "Error: Duplicate declaration '" << name << "' in level " << currentLevel << std::endl;
+        cerr << "Error: Duplicate declaration '" << name << "' in level " << currentLevel << endl;
         return false;
     }
 
@@ -151,9 +152,9 @@ bool SymbolTable::AddSymbol(const std::string& type, SymKind kind, const std::st
 }
 
 // 添加程序头
-bool SymbolTable::AddSymbolHead(const std::string& type, SymKind kind, const std::string& name) {
+bool SymbolTable::AddSymbolHead(const string& type, SymKind kind, const string& name) {
     if (LookupCurrentScope(name)) {
-        std::cerr << "Error: Duplicate declaration '" << name << "' in level " << currentLevel << std::endl;
+        cerr << "Error: Duplicate declaration '" << name << "' in level " << currentLevel << endl;
         return false;
     }
 
@@ -164,9 +165,9 @@ bool SymbolTable::AddSymbolHead(const std::string& type, SymKind kind, const std
 }
 
 // 添加类型标识符
-bool SymbolTable::AddSymbolType(const std::string& type, SymKind kind, const std::string& name) {
+bool SymbolTable::AddSymbolType(const string& type, SymKind kind, const string& name) {
     if (LookupCurrentScope(name)) {
-        std::cerr << "Error: Duplicate declaration '" << name << "' in level " << currentLevel << std::endl;
+        cerr << "Error: Duplicate declaration '" << name << "' in level " << currentLevel << endl;
         return false;
     }
 
@@ -177,10 +178,10 @@ bool SymbolTable::AddSymbolType(const std::string& type, SymKind kind, const std
 }
 
 // 添加参数
-bool SymbolTable::AddSymbolParam(const std::string& procedurename, const std::string& type,
-    SymKind kind, const std::string& name) {
+bool SymbolTable::AddSymbolParam(const string& procedurename, const string& type,
+    SymKind kind, const string& name) {
     if (LookupCurrentScope(name)) {
-        std::cerr << "Error: Duplicate declaration '" << name << "' in level " << currentLevel << std::endl;
+        cerr << "Error: Duplicate declaration '" << name << "' in level " << currentLevel << endl;
         return false;
     }
 
@@ -191,9 +192,9 @@ bool SymbolTable::AddSymbolParam(const std::string& procedurename, const std::st
 }
 
 // 添加过程标识符
-bool SymbolTable::AddSymbolProc(const std::string& type, SymKind kind, const std::string& name) {
+bool SymbolTable::AddSymbolProc(const string& type, SymKind kind, const string& name) {
     if (LookupCurrentScope(name)) {
-        std::cerr << "Error: Duplicate declaration '" << name << "' in level " << currentLevel << std::endl;
+        cerr << "Error: Duplicate declaration '" << name << "' in level " << currentLevel << endl;
         return false;
     }
 
@@ -204,7 +205,7 @@ bool SymbolTable::AddSymbolProc(const std::string& type, SymKind kind, const std
 }
 
 // 在当前作用域查找
-SymbolEntry* SymbolTable::LookupCurrentScope(const std::string& name) {
+SymbolEntry* SymbolTable::LookupCurrentScope(const string& name) {
     SymbolEntry* p = scopeStack[currentLevel];
     while (p) {
         if (p->name == name) {
@@ -216,7 +217,7 @@ SymbolEntry* SymbolTable::LookupCurrentScope(const std::string& name) {
 }
 
 // 跨作用域查找
-SymbolEntry* SymbolTable::Lookup(const std::string& name) {
+SymbolEntry* SymbolTable::Lookup(const string& name) {
     for (int lv = currentLevel; lv >= 0; lv--) {
         SymbolEntry* p = scopeStack[lv];
         while (p) {
@@ -251,7 +252,7 @@ void SymbolTable::DestroyTable() {
 }
 
 // 在当前表查找
-bool SymbolTable::SearchOneTable(const std::string& id, SymbolEntry** entry) {
+bool SymbolTable::SearchOneTable(const string& id, SymbolEntry** entry) {
     SymbolEntry* p = scopeStack[currentLevel];
     while (p) {
         if (p->name == id) {
@@ -266,7 +267,7 @@ bool SymbolTable::SearchOneTable(const std::string& id, SymbolEntry** entry) {
 }
 
 // 查找条目
-bool SymbolTable::FindEntry(const std::string& id, const std::string& flag, SymbolEntry** entry) {
+bool SymbolTable::FindEntry(const string& id, const string& flag, SymbolEntry** entry) {
     if (flag == "one") {
         return SearchOneTable(id, entry);
     }
@@ -303,10 +304,10 @@ bool SymbolTable::FindEntry(const std::string& id, const std::string& flag, Symb
 }
 
 // 登记标识符
-bool SymbolTable::Enter(const std::string& id, const std::string& type, SymbolEntry** entry) {
+bool SymbolTable::Enter(const string& id, const string& type, SymbolEntry** entry) {
     if (SearchOneTable(id, nullptr)) {
-        std::cerr << "Error: Duplicate declaration of '" << id << "' in scope level "
-            << currentLevel << std::endl;
+        cerr << "Error: Duplicate declaration of '" << id << "' in scope level "
+            << currentLevel << endl;
         return false;
     }
 
@@ -323,35 +324,44 @@ bool SymbolTable::Enter(const std::string& id, const std::string& type, SymbolEn
 }
 
 // 打印符号表
-void SymbolTable::PrintSymbolTable() {
-    std::cout << "===== Symbol Table (Max Level: " << maxlevel << ") =====" << std::endl;
+void SymbolTable::PrintSymbolTable(ofstream& outputFile) {
+    cout << "===== Symbol Table (Max Level: " << maxlevel << ") =====" << endl;
+    outputFile << "===== Symbol Table (Max Level: " << maxlevel << ") =====" << endl;
     for (int lv = maxlevel; lv >= 0; lv--) {
-        std::cout << "--- Level " << lv << " ---" << std::endl;
+        cout << "--- Level " << lv << " ---" << endl;
+        outputFile << "--- Level " << lv << " ---" << endl;
         SymbolEntry* p = scopeStack[lv];
         while (p) {
             if (p->offset == -1) {
-                std::cout << "Type: " << p->name << " | Name: " << p->type << std::endl;
+                cout << "Type: " << p->name << " | Name: " << p->type << endl;
+                outputFile << "Type: " << p->name << " | Name: " << p->type << endl;
             }
             else if (p->offset == -2) {
-                std::cout << "Name: " << p->name << " | Type: " << p->type << std::endl;
+                cout << "Name: " << p->name << " | Type: " << p->type << endl;
+                outputFile << "Name: " << p->name << " | Type: " << p->type << endl;
             }
             else if (p->offset == -4) {
-                std::cout << "NULL | procKind | Type: " << p->name << " | Name: " << p->type << std::endl;
+                cout << "NULL | procKind | Type: " << p->name << " | Name: " << p->type << endl;
+                outputFile << "NULL | procKind | Type: " << p->name << " | Name: " << p->type << endl;
             }
             else if (!p->procName.empty()) {
                 if (!p->type.empty() && p->type.back() == '^') {
-                    std::cout << "Parameter\tType: " << p->type << " | varKind | indir | Name: " << p->name << " | Offset: " << p->offset << std::endl;
+                    cout << "Parameter\tType: " << p->type << " | varKind | indir | Name: " << p->name << " | Offset: " << p->offset << endl;
+                    outputFile << "Parameter\tType: " << p->type << " | varKind | indir | Name: " << p->name << " | Offset: " << p->offset << endl;
                 }
                 else {
-                    std::cout << "Parameter\tType: " << p->type << " | varKind | dir | Name: " << p->name << " | Offset: " << p->offset << std::endl;
+                    cout << "Parameter\tType: " << p->type << " | varKind | dir | Name: " << p->name << " | Offset: " << p->offset << endl;
+                    outputFile << "Parameter\tType: " << p->type << " | varKind | dir | Name: " << p->name << " | Offset: " << p->offset << endl;
                 }
             }
             else {
                 if (!p->type.empty() && p->type.back() == '^') {
-                    std::cout << "Type: " << p->type << " | varKind | indir | Name: " << p->name << " | Offset: " << p->offset << std::endl;
+                    cout << "Type: " << p->type << " | varKind | indir | Name: " << p->name << " | Offset: " << p->offset << endl;
+                    outputFile << "Type: " << p->type << " | varKind | indir | Name: " << p->name << " | Offset: " << p->offset << endl;
                 }
                 else {
-                    std::cout << "Type: " << p->type << " | varKind | dir | Name: " << p->name << " | Offset: " << p->offset << std::endl;
+                    cout << "Type: " << p->type << " | varKind | dir | Name: " << p->name << " | Offset: " << p->offset << endl;
+                    outputFile << "Type: " << p->type << " | varKind | dir | Name: " << p->name << " | Offset: " << p->offset << endl;
                 }
             }
             p = p->next;
@@ -360,16 +370,16 @@ void SymbolTable::PrintSymbolTable() {
 }
 
 // 域表操作
-void SymbolTable::AddFieldTable(const std::string& typeName, FieldChain* fields) {
+void SymbolTable::AddFieldTable(const string& typeName, FieldChain* fields) {
     fieldTables[typeName] = fields;
 }
 
-FieldChain* SymbolTable::GetFieldTable(const std::string& typeName) {
+FieldChain* SymbolTable::GetFieldTable(const string& typeName) {
     auto it = fieldTables.find(typeName);
     return it != fieldTables.end() ? it->second : nullptr;
 }
 
-bool SymbolTable::FindField(const std::string& id, FieldChain* head, FieldEntry** entry) {
+bool SymbolTable::FindField(const string& id, FieldChain* head, FieldEntry** entry) {
     if (!head || !head->head) {
         if (entry) {
             *entry = nullptr;
@@ -394,18 +404,18 @@ bool SymbolTable::FindField(const std::string& id, FieldChain* head, FieldEntry*
     return false;
 }
 
-bool SymbolTable::FindFieldInTable(const std::string& typeName,
-    const std::string& fieldName,
+bool SymbolTable::FindFieldInTable(const string& typeName,
+    const string& fieldName,
     FieldEntry** entry) {
     FieldChain* table = GetFieldTable(typeName);
     return FindField(fieldName, table, entry);
 }
 
 // 插入符号
-bool SymbolTable::insert(const std::string& name, const std::string& type, std::ofstream& outputFile) {
+bool SymbolTable::insert(const string& name, const string& type, ofstream& outputFile) {
     if (table.find(name) != table.end()) {
-        std::cout << "Error: Variable '" << name << "' redeclared in the same scope." << std::endl;
-        outputFile << "Error: Variable '" << name << "' redeclared in the same scope." << std::endl;
+        cout << "Error: Variable '" << name << "' redeclared in the same scope." << endl;
+        outputFile << "Error: Variable '" << name << "' redeclared in the same scope." << endl;
         return false;
     }
     table[name] = type;
@@ -413,7 +423,7 @@ bool SymbolTable::insert(const std::string& name, const std::string& type, std::
 }
 
 // 查找符号
-std::string SymbolTable::lookup(const std::string& name) {
+string SymbolTable::lookup(const string& name) {
     if (table.find(name) != table.end()) {
         return table[name];
     }
@@ -501,7 +511,8 @@ void BuildSymbolTable(Node* node, SymbolTable& symTable) {
     }
 }
 
-// 语义分析阶段
+
+
 // 语义分析函数
 void semanticAnalysis(Node* tree, SymbolTable* symTable, ofstream& outputFile) {
     if (!tree) return;

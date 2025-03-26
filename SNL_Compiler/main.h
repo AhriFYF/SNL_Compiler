@@ -22,6 +22,7 @@ using namespace std;
 extern string SMLinputfile;
 extern string Lexicalfile;
 extern string Syntaxfile;
+extern string Symboltablefile;
 extern string Semanticfile;
 extern string Targetcodefile;
 
@@ -153,7 +154,7 @@ public:
 	// 辅助功能
 	bool insert(const string& name, const string& type, ofstream& outputFile);
 	string lookup(const string& name);
-	void PrintSymbolTable();
+	void PrintSymbolTable(ofstream& outputFile);
 };
 
 //全局变量
