@@ -571,7 +571,7 @@ void printSymbolTable(SymbolNode* node, ofstream& outputFile) {
     if (node == nullptr) return;
 
     // 打印当前节点信息
-    cout << "Type: " << node->type << " | Name: " << node->name << " | Level: " << node->level << endl;
+    // cout << "Type: " << node->type << " | Name: " << node->name << " | Level: " << node->level << endl;
     outputFile << "Type: " << node->type << " | Name: " << node->name << " | Level: " << node->level << endl;
 
     // 递归打印子节点
@@ -580,71 +580,26 @@ void printSymbolTable(SymbolNode* node, ofstream& outputFile) {
 
 
 // 语义分析函数主体
-void semanticAnalysis(Node* tree, SymbolTable* symTable, ofstream& outputFile, SymbolNode* Parsedsymboltable) {
-    if (!tree) return;
+void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, SymbolNode* Parsedsymboltable, int depth) {
+	if (!node) return;
 
-
-
-    // 处理过程声明
-    if (tree->type == "PROCEDURE") {
-        SymbolTable* newScope = new SymbolTable(symTable);
-        for (auto child : tree->children) {
-            semanticAnalysis(child, newScope, outputFile, Parsedsymboltable);
+    // 无声明的标识符
+    if (node->type == "ID") {
+        SymbolEntry* entry = nullptr;
+        if (!symTable->FindEntry(node->name, "one", &entry)) {
+            cout << node->name << " 未声明" << endl;
+            outputFile << node->name << " 未声明" << endl;
         }
     }
 
-    // 处理语句块
-    if (tree->type == "StmLK") {
-        for (auto stmt : tree->children) {
-            if (stmt->type == "READ" || stmt->type == "WRITE") {
-                string res = symTable->lookup(stmt->name);
-                if (res.find("ERROR") != string::npos) {
-                    outputFile << res << endl;
-                }
-            }
-
-            // 赋值语句处理
-            if (stmt->type == "AssignK") {
-                string leftType = symTable->lookup(stmt->leftVar);
-                string rightType = symTable->lookup(stmt->rightVar);
-
-                if (leftType.find("ERROR") != string::npos) {
-                    outputFile << leftType << endl;
-                }
-                if (rightType.find("ERROR") != string::npos) {
-                    outputFile << rightType << endl;
-                }
-                if (leftType != rightType && leftType.find("ERROR") == string::npos && rightType.find("ERROR") == string::npos) {
-                    outputFile << "Error: Type mismatch in assignment of '" << stmt->leftVar << "'." << endl;
-                }
-            }
-
-            // 条件语句处理
-            if (stmt->type == "IF" || stmt->type == "WHILE") {
-                string condType = symTable->lookup(stmt->children[0]->name);
-                if (condType != "BOOLEAN") {
-                    outputFile << "Error: Condition expression must be of BOOLEAN type." << endl;
-                }
-            }
-
-            // 过程调用处理
-            if (stmt->type == "CALL") {
-                string procType = symTable->lookup(stmt->name);
-                if (procType != "PROCEDURE") {
-                    outputFile << "Error: Identifier '" << stmt->name << "' is not a procedure." << endl;
-                }
-            }
-        }
-    }
-
-    // 递归遍历子节点
-    for (auto child : tree->children) {
-        semanticAnalysis(child, symTable, outputFile, Parsedsymboltable);
-    }
+	// 递归分析子节点
+	for (size_t i = 0; i < node->children.size(); ++i) {
+        semanticAnalysis(node->children[i], symTable, outputFile, Parsedsymboltable, depth + 1);
+	}
 }
 
 // 语义分析函数
-void mainsemanticAnalysis(Node* tree, SymbolTable* symTable, ofstream& outputFile, SymbolNode* Parsedsymboltable) {
+void mainsemanticAnalysis(Node* tree, SymbolTable* symTable, ofstream& outputFile, SymbolNode* Parsedsymboltable, int depth) {
     if (!tree) return;
 
 
@@ -670,5 +625,9 @@ void mainsemanticAnalysis(Node* tree, SymbolTable* symTable, ofstream& outputFil
         nodemap = nodemap->parent;
     }
 
-    semanticAnalysis(tree, symTable, outputFile, Parsedsymboltable);
+
+
+    
+
+    semanticAnalysis(tree, symTable, outputFile, Parsedsymboltable, depth);
 }
