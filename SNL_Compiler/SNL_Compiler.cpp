@@ -90,7 +90,9 @@ int main() {
 	cout << "符号表已写入: " << Symboltablefile << endl;
 	cout << "\nSemantic Analysis Results:" << endl;
 	//语义分析-语义检查
-	semanticAnalysis(syntaxTree, symTable, Semantic);
+	SymbolNode* Parsedsymboltable = parseSymbolTable(Symboltablefile);					//解析符号表
+	printSymbolTable(Parsedsymboltable);												//打印解析后的符号表
+	semanticAnalysis(syntaxTree, symTable, Semantic, Parsedsymboltable);
 	cout << "语义错误信息已写入: " << Semanticfile << endl;
 
 	//目标代码生成

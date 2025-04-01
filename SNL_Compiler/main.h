@@ -1,6 +1,4 @@
 #pragma once
-#ifndef MAIN_H
-#define MAIN_H
 
 #include <iostream>
 #include <fstream>
@@ -56,12 +54,12 @@ struct SymbolEntry {
 struct Treenode {
 	Treenode* child[10];
 	Treenode* sibling;
-	int idchild = 0;//儿子的个数
-	string nodekind;//节点类型
-	Specificnode specificnode;//详细类型
-	int idnum = 0;//标识符个数
-	string value;//节点的值（有的节点只有一个标识符。也用value了）
-	string id[10];//部分标识符的值
+	int idchild = 0;			//儿子的个数
+	string nodekind;			//节点类型
+	Specificnode specificnode;	//详细类型
+	int idnum = 0;				//标识符个数
+	string value;				//节点的值（有的节点只有一个标识符。也用value了）
+	string id[10];				//部分标识符的值
 };
 
 // 解析后的语法树节点结构
@@ -74,6 +72,17 @@ struct Node {
 	vector<Node*> children;
 
 	Node(string t, string n = "", string vType = "", string par = "") : type(t), name(n), varType(vType), isparam(par) {}
+};
+
+// 解析后的符号表节点结构
+struct SymbolNode {
+    string type;                    // 类型、变量、过程、参数
+    string name;                    // 名称
+	int level;                    	// 作用域层级
+    SymbolNode* child = nullptr;   	// 子节点
+	SymbolNode* parent = nullptr;	// 父节点
+
+    SymbolNode(string t, string n = "", int i = 0) : type(t), name(n), level(i) {}
 };
 
 // 符号表项类型
@@ -203,6 +212,6 @@ Node* parseSyntaxTree(const string& filePath);
 void printSyntaxTree(Node* node, int depth = 0);
 void PrintSyntaxTree(Node* node, int depth = 0, bool isLastChild = true);
 void BuildSymbolTable(Node* node, SymbolTable& symTable);
-void semanticAnalysis(Node* tree, SymbolTable* symTable, ofstream& outputFile);
-
-#endif
+SymbolNode* parseSymbolTable(const string& filePath);
+void printSymbolTable(SymbolNode* node);
+void semanticAnalysis(Node* tree, SymbolTable* symTable, ofstream& outputFile, SymbolNode* Parsedsymboltable);

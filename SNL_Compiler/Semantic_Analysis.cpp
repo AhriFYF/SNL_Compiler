@@ -332,19 +332,19 @@ void SymbolTable::PrintSymbolTable(ofstream& outputFile) {
         outputFile << "--- Level " << lv << " ---" << endl;
         SymbolEntry* p = scopeStack[lv];
         while (p) {
-            if (p->offset == -1) {
+            if (p->offset == -1) {                      //程序头
                 cout << "Type: " << p->name << " | Name: " << p->type << endl;
                 outputFile << "Type: " << p->name << " | Name: " << p->type << endl;
             }
-            else if (p->offset == -2) {
-                cout << "Name: " << p->name << " | Type: " << p->type << endl;
-                outputFile << "Name: " << p->name << " | Type: " << p->type << endl;
+            else if (p->offset == -2) {                 //类型
+                cout << "DEFINE     " << "Name: " << p->name << " | Type: " << p->type << endl;
+                outputFile << "DEFINE     " << "Name: " << p->name << " | Type: " << p->type << endl;
             }
-            else if (p->offset == -4) {
+            else if (p->offset == -4) {                 //过程
                 cout << "NULL | procKind | Type: " << p->name << " | Name: " << p->type << endl;
                 outputFile << "NULL | procKind | Type: " << p->name << " | Name: " << p->type << endl;
             }
-            else if (!p->procName.empty()) {
+            else if (!p->procName.empty()) {            //参数
                 if (!p->type.empty() && p->type.back() == '^') {
                     cout << "Parameter\tType: " << p->type << " | varKind | indir | Name: " << p->name << " | Offset: " << p->offset << endl;
                     outputFile << "Parameter\tType: " << p->type << " | varKind | indir | Name: " << p->name << " | Offset: " << p->offset << endl;
@@ -354,7 +354,7 @@ void SymbolTable::PrintSymbolTable(ofstream& outputFile) {
                     outputFile << "Parameter\tType: " << p->type << " | varKind | dir | Name: " << p->name << " | Offset: " << p->offset << endl;
                 }
             }
-            else {
+            else {                                      //变量
                 if (!p->type.empty() && p->type.back() == '^') {
                     cout << "Type: " << p->type << " | varKind | indir | Name: " << p->name << " | Offset: " << p->offset << endl;
                     outputFile << "Type: " << p->type << " | varKind | indir | Name: " << p->name << " | Offset: " << p->offset << endl;
@@ -511,10 +511,100 @@ void BuildSymbolTable(Node* node, SymbolTable& symTable) {
     }
 }
 
+// 解析符号表
+SymbolNode* parseSymbolTable(const string& filePath) {
+    ifstream file(filePath);
+    if (!file) {
+        cerr << "Error: Cannot open file " << filePath << endl;
+        return nullptr;
+    }
+
+    SymbolNode* root = nullptr;
+    string line;
+
+    int indent = 0;
+    while (getline(file, line)) {
+        if (line.find("Level")!= string::npos) {
+            sscanf_s(line.c_str(), "--- Level %d ---", &indent);    // 读取层级
+            continue; // 跳过层级行
+        }
+
+        if (line.empty() || line.find("=====")!= string::npos) continue; // 跳过空行和首行
+
+        istringstream iss(line);
+        string token, type, name;
+        string varType, dir, offset;
+
+        if (line.find("PROGRAM") != string::npos) {                             //程序处理
+            iss >> token >> token >> token >> token >> name;                    // Type: PROGRAM | Name: p
+            SymbolNode* newNode = new SymbolNode("PROGRAM", name, indent);
+            if(root == nullptr) root = newNode;
+            else if (newNode != nullptr) {
+                root->child = newNode;
+                newNode->parent = root;
+                root = newNode; // 更新根节点为程序节点
+            }
+        }
+        else if (line.find("PROCEDURE") != string::npos) {                                            //过程处理
+            iss >> token >> token >> token >> token >> token >> token >> token >> token >> name;      // NULL | procKind | Type: PROCEDURE | Name: q
+            SymbolNode* newNode = new SymbolNode("PROCEDURE", name, indent);
+            if(root == nullptr) root = newNode;
+            else if (newNode != nullptr) {
+                root->child = newNode;
+                newNode->parent = root;
+                root = newNode; // 更新根节点为程序节点
+            }
+        }
+        else if (line.find("Parameter") != string::npos) {     //参数处理       //Parameter	Type: INTEGER | varKind | dir | Name: i | Offset: 0
+            iss >> token >> token >> token >> token >> token >> token >> token >> token >> token >> name;
+            SymbolNode* newNode = new SymbolNode("PARAMETER", name, indent);
+            if(root == nullptr) root = newNode;
+            else if (newNode != nullptr) {
+                root->child = newNode;
+                newNode->parent = root;
+                root = newNode; // 更新根节点为程序节点
+            }
+        }
+        else if (line.find("DEFINE") != string::npos) {         //类型处理
+            iss >> token >> token >> name >> token >> token;                 //DEFINE     Name: t1 | Type: INTEGER
+            SymbolNode* newNode = new SymbolNode("DEFINE", name, indent);
+            if(root == nullptr) root = newNode;
+            else if (newNode != nullptr) {
+                root->child = newNode;
+                newNode->parent = root;
+                root = newNode; // 更新根节点为程序节点
+            }
+        }
+        else{                                                   //变量处理      //Type: INTEGER | varKind | dir | Name: v1 | Offset: 0
+            iss >> token >> token >> token >> token >> token >> token >> token >> token >> name >> token >> token;
+            SymbolNode* newNode = new SymbolNode("VARIABLE", name, indent);
+            if(root == nullptr) root = newNode;
+            else if (newNode != nullptr) {
+                root->child = newNode;
+                newNode->parent = root;
+                root = newNode; // 更新根节点为程序节点
+            }
+        }
+    }
+
+    file.close();
+    return root;
+}
+
+// 打印解析后的符号表
+void printSymbolTable(SymbolNode* node) {
+    if (node == nullptr) return;
+
+    // 打印当前节点信息
+    cout << "Type: " << node->type << " | Name: " << node->name << " | Level: " << node->level << endl;
+
+    // 递归打印子节点
+    printSymbolTable(node->parent);
+}
 
 
 // 语义分析函数
-void semanticAnalysis(Node* tree, SymbolTable* symTable, ofstream& outputFile) {
+void semanticAnalysis(Node* tree, SymbolTable* symTable, ofstream& outputFile, SymbolNode* Parsedsymboltable) {
     if (!tree) return;
 
     // 处理类型和变量声明
@@ -530,7 +620,7 @@ void semanticAnalysis(Node* tree, SymbolTable* symTable, ofstream& outputFile) {
     if (tree->type == "PROCEDURE") {
         SymbolTable* newScope = new SymbolTable(symTable);
         for (auto child : tree->children) {
-            semanticAnalysis(child, newScope, outputFile);
+            semanticAnalysis(child, newScope, outputFile, Parsedsymboltable);
         }
     }
 
@@ -580,6 +670,6 @@ void semanticAnalysis(Node* tree, SymbolTable* symTable, ofstream& outputFile) {
 
     // 递归遍历子节点
     for (auto child : tree->children) {
-        semanticAnalysis(child, symTable, outputFile);
+        semanticAnalysis(child, symTable, outputFile, Parsedsymboltable);
     }
 }
