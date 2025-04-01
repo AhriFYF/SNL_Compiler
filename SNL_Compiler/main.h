@@ -213,5 +213,6 @@ void printSyntaxTree(Node* node, int depth = 0);
 void PrintSyntaxTree(Node* node, int depth = 0, bool isLastChild = true);
 void BuildSymbolTable(Node* node, SymbolTable& symTable);
 SymbolNode* parseSymbolTable(const string& filePath);
-void printSymbolTable(SymbolNode* node);
+void printSymbolTable(SymbolNode* node, ofstream& outputFile);
 void semanticAnalysis(Node* tree, SymbolTable* symTable, ofstream& outputFile, SymbolNode* Parsedsymboltable);
+void mainsemanticAnalysis(Node* tree, SymbolTable* symTable, ofstream& outputFile, SymbolNode* Parsedsymboltable);

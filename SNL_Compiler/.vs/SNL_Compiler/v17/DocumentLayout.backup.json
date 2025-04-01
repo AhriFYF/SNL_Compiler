@@ -1,0 +1,121 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{C23F4B47-0802-405A-A016-BBD5C59CBF87}|SNL_Compiler.vcxproj|C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\Semantic_Analysis.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{C23F4B47-0802-405A-A016-BBD5C59CBF87}|SNL_Compiler.vcxproj|solutionrelative:Semantic_Analysis.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C23F4B47-0802-405A-A016-BBD5C59CBF87}|SNL_Compiler.vcxproj|C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\main.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{C23F4B47-0802-405A-A016-BBD5C59CBF87}|SNL_Compiler.vcxproj|solutionrelative:main.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C23F4B47-0802-405A-A016-BBD5C59CBF87}|SNL_Compiler.vcxproj|C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\SNL_Compiler.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{C23F4B47-0802-405A-A016-BBD5C59CBF87}|SNL_Compiler.vcxproj|solutionrelative:SNL_Compiler.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C23F4B47-0802-405A-A016-BBD5C59CBF87}|SNL_Compiler.vcxproj|C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\Syntax_Analysis.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{C23F4B47-0802-405A-A016-BBD5C59CBF87}|SNL_Compiler.vcxproj|solutionrelative:Syntax_Analysis.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C23F4B47-0802-405A-A016-BBD5C59CBF87}|SNL_Compiler.vcxproj|C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\Lexical_Analysis.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{C23F4B47-0802-405A-A016-BBD5C59CBF87}|SNL_Compiler.vcxproj|solutionrelative:Lexical_Analysis.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C23F4B47-0802-405A-A016-BBD5C59CBF87}|SNL_Compiler.vcxproj|C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\Target_code_generation.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{C23F4B47-0802-405A-A016-BBD5C59CBF87}|SNL_Compiler.vcxproj|solutionrelative:Target_code_generation.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 5,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{b1e99781-ab81-11d0-b683-00aa00a3ee26}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "main.h",
+              "DocumentMoniker": "C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\main.h",
+              "RelativeDocumentMoniker": "main.h",
+              "ToolTip": "C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\main.h",
+              "RelativeToolTip": "main.h",
+              "ViewState": "AgIAAGoAAAAAAAAAAAAhwFIAAAAoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-04-01T01:52:37.489Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "SNL_Compiler.cpp",
+              "DocumentMoniker": "C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\SNL_Compiler.cpp",
+              "RelativeDocumentMoniker": "SNL_Compiler.cpp",
+              "ToolTip": "C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\SNL_Compiler.cpp",
+              "RelativeToolTip": "SNL_Compiler.cpp",
+              "ViewState": "AgIAAFEAAAAAAAAAAAAhwGMAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-03-30T09:23:58.615Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Lexical_Analysis.cpp",
+              "DocumentMoniker": "C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\Lexical_Analysis.cpp",
+              "RelativeDocumentMoniker": "Lexical_Analysis.cpp",
+              "ToolTip": "C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\Lexical_Analysis.cpp",
+              "RelativeToolTip": "Lexical_Analysis.cpp",
+              "ViewState": "AQIAAAAAAAAAAAAAAADwvwAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-03-30T09:23:58.863Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Syntax_Analysis.cpp",
+              "DocumentMoniker": "C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\Syntax_Analysis.cpp",
+              "RelativeDocumentMoniker": "Syntax_Analysis.cpp",
+              "ToolTip": "C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\Syntax_Analysis.cpp",
+              "RelativeToolTip": "Syntax_Analysis.cpp",
+              "ViewState": "AQIAAAAAAAAAAAAAAADwvwAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-03-30T09:23:58.867Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Semantic_Analysis.cpp",
+              "DocumentMoniker": "C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\Semantic_Analysis.cpp",
+              "RelativeDocumentMoniker": "Semantic_Analysis.cpp",
+              "ToolTip": "C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\Semantic_Analysis.cpp",
+              "RelativeToolTip": "Semantic_Analysis.cpp",
+              "ViewState": "AgIAAEgCAAAAAAAAAAAcwEgCAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-03-30T09:23:58.868Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Target_code_generation.cpp",
+              "DocumentMoniker": "C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\Target_code_generation.cpp",
+              "RelativeDocumentMoniker": "Target_code_generation.cpp",
+              "ToolTip": "C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\Target_code_generation.cpp",
+              "RelativeToolTip": "Target_code_generation.cpp",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-03-30T09:23:58.869Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

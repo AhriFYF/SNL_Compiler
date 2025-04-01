@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "xstring": "cpp",
+        "iosfwd": "cpp",
+        "stack": "cpp",
+        "utility": "cpp",
+        "deque": "cpp",
+        "list": "cpp",
+        "vector": "cpp",
+        "string": "cpp",
+        "iostream": "cpp"
+    }
+}

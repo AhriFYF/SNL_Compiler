@@ -140,11 +140,6 @@ void SymbolTable::ExitScope() {
 
 // 添加变量标识符
 bool SymbolTable::AddSymbol(const string& type, SymKind kind, const string& name) {
-    if (LookupCurrentScope(name)) {
-        cerr << "Error: Duplicate declaration '" << name << "' in level " << currentLevel << endl;
-        return false;
-    }
-
     SymbolEntry* entry = new SymbolEntry(name, type, currentLevel, currentOffset++, "");
     entry->next = scopeStack[currentLevel];
     scopeStack[currentLevel] = entry;
@@ -153,11 +148,6 @@ bool SymbolTable::AddSymbol(const string& type, SymKind kind, const string& name
 
 // 添加程序头
 bool SymbolTable::AddSymbolHead(const string& type, SymKind kind, const string& name) {
-    if (LookupCurrentScope(name)) {
-        cerr << "Error: Duplicate declaration '" << name << "' in level " << currentLevel << endl;
-        return false;
-    }
-
     SymbolEntry* entry = new SymbolEntry(name, type, currentLevel, -1, "");
     entry->next = scopeStack[currentLevel];
     scopeStack[currentLevel] = entry;
@@ -166,11 +156,6 @@ bool SymbolTable::AddSymbolHead(const string& type, SymKind kind, const string& 
 
 // 添加类型标识符
 bool SymbolTable::AddSymbolType(const string& type, SymKind kind, const string& name) {
-    if (LookupCurrentScope(name)) {
-        cerr << "Error: Duplicate declaration '" << name << "' in level " << currentLevel << endl;
-        return false;
-    }
-
     SymbolEntry* entry = new SymbolEntry(name, type, currentLevel, -2, "");
     entry->next = scopeStack[currentLevel];
     scopeStack[currentLevel] = entry;
@@ -178,13 +163,7 @@ bool SymbolTable::AddSymbolType(const string& type, SymKind kind, const string& 
 }
 
 // 添加参数
-bool SymbolTable::AddSymbolParam(const string& procedurename, const string& type,
-    SymKind kind, const string& name) {
-    if (LookupCurrentScope(name)) {
-        cerr << "Error: Duplicate declaration '" << name << "' in level " << currentLevel << endl;
-        return false;
-    }
-
+bool SymbolTable::AddSymbolParam(const string& procedurename, const string& type, SymKind kind, const string& name) {
     SymbolEntry* entry = new SymbolEntry(name, type, currentLevel, currentOffset++, procedurename);
     entry->next = scopeStack[currentLevel];
     scopeStack[currentLevel] = entry;
@@ -193,11 +172,6 @@ bool SymbolTable::AddSymbolParam(const string& procedurename, const string& type
 
 // 添加过程标识符
 bool SymbolTable::AddSymbolProc(const string& type, SymKind kind, const string& name) {
-    if (LookupCurrentScope(name)) {
-        cerr << "Error: Duplicate declaration '" << name << "' in level " << currentLevel << endl;
-        return false;
-    }
-
     SymbolEntry* entry = new SymbolEntry(name, type, currentLevel, -4, "");
     entry->next = scopeStack[currentLevel];
     scopeStack[currentLevel] = entry;
@@ -367,6 +341,7 @@ void SymbolTable::PrintSymbolTable(ofstream& outputFile) {
             p = p->next;
         }
     }
+    outputFile << "===================================================" << endl << endl << endl;
 }
 
 // 域表操作
@@ -592,29 +567,23 @@ SymbolNode* parseSymbolTable(const string& filePath) {
 }
 
 // 打印解析后的符号表
-void printSymbolTable(SymbolNode* node) {
+void printSymbolTable(SymbolNode* node, ofstream& outputFile) {
     if (node == nullptr) return;
 
     // 打印当前节点信息
     cout << "Type: " << node->type << " | Name: " << node->name << " | Level: " << node->level << endl;
+    outputFile << "Type: " << node->type << " | Name: " << node->name << " | Level: " << node->level << endl;
 
     // 递归打印子节点
-    printSymbolTable(node->parent);
+    printSymbolTable(node->parent, outputFile);
 }
 
 
-// 语义分析函数
+// 语义分析函数主体
 void semanticAnalysis(Node* tree, SymbolTable* symTable, ofstream& outputFile, SymbolNode* Parsedsymboltable) {
     if (!tree) return;
 
-    // 处理类型和变量声明
-    if (tree->type == "TYPE" || tree->type == "VAR") {
-        for (auto child : tree->children) {
-            if (!symTable->insert(child->name, child->varType, outputFile)) {
-                outputFile << "Error: Variable '" << child->name << "' redeclared in the same scope." << endl;
-            }
-        }
-    }
+
 
     // 处理过程声明
     if (tree->type == "PROCEDURE") {
@@ -672,4 +641,34 @@ void semanticAnalysis(Node* tree, SymbolTable* symTable, ofstream& outputFile, S
     for (auto child : tree->children) {
         semanticAnalysis(child, symTable, outputFile, Parsedsymboltable);
     }
+}
+
+// 语义分析函数
+void mainsemanticAnalysis(Node* tree, SymbolTable* symTable, ofstream& outputFile, SymbolNode* Parsedsymboltable) {
+    if (!tree) return;
+
+
+
+    // 标识符的重复定义
+    // 使用哈希表记录标识符出现次数
+    unordered_map<string, int> countMap;
+    // 第一次遍历：统计所有标识符
+    SymbolNode* nodemap = Parsedsymboltable;
+    while (nodemap != nullptr) {
+        countMap[nodemap->name]++;
+        nodemap = nodemap->parent;
+    }
+    // 第二次遍历：报告重复定义
+    nodemap = Parsedsymboltable;
+    while (nodemap != nullptr) {
+        if (countMap[nodemap->name] > 1) {
+            cout << nodemap->name << " 标识符重复定义" << endl;
+            outputFile << nodemap->name << " 标识符重复定义" << endl;
+            // 避免重复报告同一标识符
+            countMap[nodemap->name] = 0;
+        }
+        nodemap = nodemap->parent;
+    }
+
+    semanticAnalysis(tree, symTable, outputFile, Parsedsymboltable);
 }

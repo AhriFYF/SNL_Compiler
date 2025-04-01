@@ -1,6 +1,1 @@
-Error: Variable 'INTEGER' redeclared in the same scope.
-Error: Variable 'INTEGER' redeclared in the same scope.
-Error: Variable 'INTEGER' redeclared in the same scope.
-Error: Variable 'INTEGER' redeclared in the same scope.
-Error: Variable 'INTEGER' redeclared in the same scope.
-Error: Variable 'INTEGER' redeclared in the same scope.
+v1 标识符重复定义

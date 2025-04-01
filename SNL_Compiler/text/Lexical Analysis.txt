@@ -11,7 +11,7 @@ ID,v1
 SEMI,;
 reserved word,VAR
 reserved word,INTEGER
-ID,v2
+ID,v1
 SEMI,;
 reserved word,PROCEDURE
 CHAR,q

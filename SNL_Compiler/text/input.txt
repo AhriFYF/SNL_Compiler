@@ -1,7 +1,7 @@
 program p
 type t1 = integer;
 var integer v1;
-var integer v2;
+var integer v1;
 procedure q
 (integer i);
 var integer a;

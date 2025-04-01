@@ -4,7 +4,7 @@ Prok
         Deck INTEGER t1
     VAR
         Deck INTEGER v1
-        Deck INTEGER v2
+        Deck INTEGER v1
     PROCEDURE
         HDeck q
             Deck value param INTEGER i
