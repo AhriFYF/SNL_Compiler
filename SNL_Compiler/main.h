@@ -70,6 +70,7 @@ struct Node {
 	string leftVar, rightVar;
 	string isparam;
 	vector<Node*> children;
+	Node* parent = nullptr; 	// ¸¸½ÚµãÖ¸Õë
 
 	Node(string t, string n = "", string vType = "", string par = "") : type(t), name(n), varType(vType), isparam(par) {}
 };

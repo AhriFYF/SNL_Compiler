@@ -44,6 +44,7 @@ Node* parseSyntaxTree(const string& filePath) {
 			}
 			if (!nodeStack.empty()) {
 				nodeStack.top().second->children.push_back(newNode);
+                newNode->parent = nodeStack.top().second; // 设置父节点
 			}
 		}
 
@@ -609,9 +610,13 @@ void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, S
         isstmtk = 1; // 语句节点
     }
     if(isstmtk == 1) { // 语句节点
+        SymbolEntry* entry = nullptr;
+
+
+
         // 无声明的标识符
         if (node->name != "const" && node->name != "OP") {
-            SymbolEntry* entry = nullptr;
+            
             if (!symTable->FindEntry(node->name, "one", &entry)) {
                 if(!symTable->FindEntry(node->name, "up", &entry)) {
                     cout << node->name << " 标识符未声明" << endl;
@@ -619,8 +624,55 @@ void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, S
                 }
             }
         }
-        //标识符为非期望的标识符类别（类型标识符，变量标识符，过程名标识符）；
-        
+
+
+
+        //标识符为非期望的标识符类别（类型标识符，变量标识符，过程名标识符）
+        if (entry) {
+            string expectedKind = "";
+            string actualKind = entry->type;
+            
+            // 根据上下文确定期望的标识符类别
+            if (node->parent && node->parent->name == "CALL") {
+                expectedKind = "PROCEDURE"; // 调用语句中期望过程名
+            }
+            else if (node->parent && node->parent->type == "AssignK") {
+                // 赋值语句中期望变量，且类型是基本数据类型之一
+                if (actualKind == "INTEGER" || actualKind == "FLOAT" || actualKind == "DOUBLE" || actualKind == "CHAR") {
+                    // 类型符合要求，不做处理
+                } else {
+                    expectedKind = "variable";
+                }
+            }
+            else if (node->parent && node->parent->name == "TypeK") {
+                expectedKind = "type"; // 类型声明中期望类型名
+            }
+            
+            // 如果期望类别与实际类别不匹配
+            if (!expectedKind.empty() && actualKind != expectedKind) {
+                string errorMsg = node->name + " 标识符为非期望的标识符类别(期望: " + expectedKind + ", 实际: " + actualKind + ")";
+                cout << errorMsg << endl;
+                outputFile << errorMsg << endl;
+            }
+            
+            // 如果期望类别与实际类别不匹配
+            if (
+                !expectedKind.empty() && 
+                (
+                    actualKind != expectedKind &&
+                    !(actualKind == "INTEGER" || actualKind == "FLOAT" || actualKind == "DOUBLE" || actualKind == "CHAR")
+                )
+            ) 
+            {
+                string errorMsg = node->name + " 标识符为非期望的标识符类别(期望: " + expectedKind + ", 实际: " + actualKind;
+                if (!actualKind.empty()) {
+                    errorMsg += " of type " + actualKind;
+                }
+                errorMsg += ")";
+                cout << errorMsg << endl;
+                outputFile << errorMsg << endl;
+            }
+        }
     }
 
 
