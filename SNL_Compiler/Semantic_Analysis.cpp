@@ -619,6 +619,8 @@ void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, S
                 }
             }
         }
+        //标识符为非期望的标识符类别（类型标识符，变量标识符，过程名标识符）；
+        
     }
 
 
@@ -659,6 +661,7 @@ void mainsemanticAnalysis(Node* tree, SymbolTable* symTable, ofstream& outputFil
 
 
     
+
     symTable->setcurrentlevel(0); // 设置当前层级
     semanticAnalysis(tree, symTable, outputFile, Parsedsymboltable, depth);
 }
