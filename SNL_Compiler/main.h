@@ -164,6 +164,9 @@ public:
 	bool insert(const string& name, const string& type, ofstream& outputFile);
 	string lookup(const string& name);
 	void PrintSymbolTable(ofstream& outputFile);
+	void setcurrentlevel(int i);
+	void addcurrentlevel(int i);
+	void subcurrentlevel(int i);
 };
 
 //全局变量
