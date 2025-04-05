@@ -23,15 +23,20 @@ Node* parseSyntaxTree(const string& filePath) {
 		if (line.empty()) continue; // 跳过空行
 
 		istringstream iss(line);
-		string type, name, varType, par1, par2;
-		iss >> type >> varType >> name >> par1 >> par2; // 读取类型、变量名、变量类型、可能的参数1、参数2
-
+		string type, name, varType, par1, par2, token, arrayType, arrayName, upper, lower;
+        // 读取类型、变量名、变量类型、可能的参数1、参数2、token、数组类型、数组名
+        // 数组下界在par1 上界在upper
+		iss >> type >> varType >> name >> par1 >> par2 >> token >> upper >> token >> token >> arrayType >> arrayName; 
 		Node* newNode = nullptr;
 		if (name == "param") {
-			newNode = new Node(type, par1, par2, "1");
+			newNode = new Node(type, par1, par2, "1", "0", "0");
 		}
+        else if (varType == "ARRAY") {
+            newNode = new Node(type, arrayType, arrayName, "0", par1, upper);
+            newNode->size = stoi(upper) - stoi(par1) + 1; // 计算数组大小
+        }
 		else {
-			newNode = new Node(type, varType, name, "0");
+			newNode = new Node(type, varType, name, "0", "0", "0");
 		}
 
 		if (nodeStack.empty()) {
@@ -141,7 +146,7 @@ void SymbolTable::ExitScope() {
 
 // 添加变量标识符
 bool SymbolTable::AddSymbol(const string& type, SymKind kind, const string& name) {
-    SymbolEntry* entry = new SymbolEntry(name, type, currentLevel, currentOffset++, "");
+    SymbolEntry* entry = new SymbolEntry(name, type, currentLevel, currentOffset++, "", 0, 0);
     entry->next = scopeStack[currentLevel];
     scopeStack[currentLevel] = entry;
     return true;
@@ -149,7 +154,7 @@ bool SymbolTable::AddSymbol(const string& type, SymKind kind, const string& name
 
 // 添加程序头
 bool SymbolTable::AddSymbolHead(const string& type, SymKind kind, const string& name) {
-    SymbolEntry* entry = new SymbolEntry(name, type, currentLevel, -1, "");
+    SymbolEntry* entry = new SymbolEntry(name, type, currentLevel, -1, "", 0, 0);
     entry->next = scopeStack[currentLevel];
     scopeStack[currentLevel] = entry;
     return true;
@@ -157,7 +162,7 @@ bool SymbolTable::AddSymbolHead(const string& type, SymKind kind, const string& 
 
 // 添加类型标识符
 bool SymbolTable::AddSymbolType(const string& type, SymKind kind, const string& name) {
-    SymbolEntry* entry = new SymbolEntry(name, type, currentLevel, -2, "");
+    SymbolEntry* entry = new SymbolEntry(name, type, currentLevel, -2, "", 0, 0);
     entry->next = scopeStack[currentLevel];
     scopeStack[currentLevel] = entry;
     return true;
@@ -165,7 +170,7 @@ bool SymbolTable::AddSymbolType(const string& type, SymKind kind, const string& 
 
 // 添加参数
 bool SymbolTable::AddSymbolParam(const string& procedurename, const string& type, SymKind kind, const string& name) {
-    SymbolEntry* entry = new SymbolEntry(name, type, currentLevel, currentOffset++, procedurename);
+    SymbolEntry* entry = new SymbolEntry(name, type, currentLevel, currentOffset++, procedurename, 0, 0);
     entry->next = scopeStack[currentLevel];
     scopeStack[currentLevel] = entry;
     return true;
@@ -173,7 +178,15 @@ bool SymbolTable::AddSymbolParam(const string& procedurename, const string& type
 
 // 添加过程标识符
 bool SymbolTable::AddSymbolProc(const string& type, SymKind kind, const string& name) {
-    SymbolEntry* entry = new SymbolEntry(type, name, currentLevel, -4, "");
+    SymbolEntry* entry = new SymbolEntry(type, name, currentLevel, -4, "", 0, 0);
+    entry->next = scopeStack[currentLevel];
+    scopeStack[currentLevel] = entry;
+    return true;
+}
+
+// 添加数组标识符
+bool SymbolTable::AddSymbolArray(const string& type, SymKind kind, const string& name, int low, int up) {
+    SymbolEntry* entry = new SymbolEntry(type, name, currentLevel, currentOffset++, "", low, up);
     entry->next = scopeStack[currentLevel];
     scopeStack[currentLevel] = entry;
     return true;
@@ -230,7 +243,7 @@ void SymbolTable::DestroyTable() {
 bool SymbolTable::SearchOneTable(const string& id, SymbolEntry** entry) {
     SymbolEntry* p = scopeStack[currentLevel];
     while (p) {
-        if (p->name == id || p->procName == id) {
+        if (p->name == id || p->procName == id || p->type == id) {
             if (entry) {
                 *entry = p;
             }
@@ -251,7 +264,7 @@ bool SymbolTable::FindEntry(const string& id, const string& flag, SymbolEntry** 
         for (int lv = currentLevel; lv >= 0; lv--) {
             SymbolEntry* p = scopeStack[lv];
             while (p) {
-                if (p->name == id || p->procName == id) {
+                if (p->name == id || p->procName == id || p->type == id) {
                     if (entry) {
                         *entry = p;
                     }
@@ -265,7 +278,7 @@ bool SymbolTable::FindEntry(const string& id, const string& flag, SymbolEntry** 
         for (int lv = currentLevel; lv < 100 && scopeStack[lv]; lv++) {
             SymbolEntry* p = scopeStack[lv];
             while (p) {
-                if (p->name == id || p->procName == id) {
+                if (p->name == id || p->procName == id || p->type == id) {
                     if (entry) {
                         *entry = p;
                     }
@@ -286,7 +299,7 @@ bool SymbolTable::Enter(const string& id, const string& type, SymbolEntry** entr
         return false;
     }
 
-    SymbolEntry* newEntry = new SymbolEntry(id, type, currentLevel, currentOffset, "");
+    SymbolEntry* newEntry = new SymbolEntry(id, type, currentLevel, currentOffset, "", 0, 0);
     currentOffset++;
 
     newEntry->next = scopeStack[currentLevel];
@@ -307,19 +320,19 @@ void SymbolTable::PrintSymbolTable(ofstream& outputFile) {
         outputFile << "--- Level " << lv << " ---" << endl;
         SymbolEntry* p = scopeStack[lv];
         while (p) {
-            if (p->offset == -1) {                      //程序头
+            if (p->offset == -1) {                                  //程序头
                 cout << "Type: " << p->name << " | Name: " << p->type << endl;
                 outputFile << "Type: " << p->name << " | Name: " << p->type << endl;
             }
-            else if (p->offset == -2) {                 //类型
+            else if (p->offset == -2) {                             //类型
                 cout << "DEFINE     " << "Name: " << p->name << " | Type: " << p->type << endl;
                 outputFile << "DEFINE     " << "Name: " << p->name << " | Type: " << p->type << endl;
             }
-            else if (p->offset == -4) {                 //过程
+            else if (p->offset == -4) {                             //过程
                 cout << "NULL | procKind | Type: " << p->type << " | Name: " << p->name << endl;
-                outputFile << "NULL | procKind | Type: " << p->name << " | Name: " << p->type << endl;
+                outputFile << "NULL | procKind | Type: " << p->type << " | Name: " << p->name << endl;
             }
-            else if (!p->procName.empty()) {            //参数
+            else if (!p->procName.empty()) {                        //参数
                 if (!p->type.empty() && p->type.back() == '^') {
                     cout << "Parameter\tType: " << p->type << " | varKind | indir | Name: " << p->name << " | Offset: " << p->offset << endl;
                     outputFile << "Parameter\tType: " << p->type << " | varKind | indir | Name: " << p->name << " | Offset: " << p->offset << endl;
@@ -329,7 +342,11 @@ void SymbolTable::PrintSymbolTable(ofstream& outputFile) {
                     outputFile << "Parameter\tType: " << p->type << " | varKind | dir | Name: " << p->name << " | Offset: " << p->offset << endl;
                 }
             }
-            else {                                      //变量
+            else if (p->lowerbound !=0 && p->upperbound != 0) {     //数组
+                cout << "Array\tType: " << p->name << " | varKind | dir | Name: " << p->type << " | Offset: " << p->offset << endl;
+                outputFile << "Array\tType: " << p->name << " | varKind | dir | Name: " << p->type << " | Offset: " << p->offset << endl;
+            }
+            else {                                                  //变量
                 if (!p->type.empty() && p->type.back() == '^') {
                     cout << "Type: " << p->type << " | varKind | indir | Name: " << p->name << " | Offset: " << p->offset << endl;
                     outputFile << "Type: " << p->type << " | varKind | indir | Name: " << p->name << " | Offset: " << p->offset << endl;
@@ -417,6 +434,19 @@ void SymbolTable::subcurrentlevel(int i) {
     currentLevel -= i;
 }
 
+string SymbolTable::typereturn(const string& name) {
+    SymbolEntry* entry = nullptr;
+    if (FindEntry(name, "one", &entry)) {
+        return entry->type;
+    }
+    else if(FindEntry(name, "up", &entry)){
+        return entry->type;
+    }
+    else if (FindEntry(name, "down", &entry)) {
+        return entry->type;
+    }
+    return "ERROR: Undeclared variable '" + name + "'";
+}
 
 // 构建符号表的核心函数
 void BuildSymbolTable(Node* node, SymbolTable& symTable) {
@@ -449,13 +479,13 @@ void BuildSymbolTable(Node* node, SymbolTable& symTable) {
         for (auto child : node->children) {
             // varType = v1
             if (child->type == "Deck") {
-                // 处理多个变量声明（如 "INTEGER v1 v2"）
-                //istringstream iss(child->name);
-                //string varName;
-                //while (iss >> varName) {
-                //    symTable.AddSymbol(varName, SymKind::VAR, child->varType);
-                //}
-                symTable.AddSymbol(child->name, SymKind::VAR, child->varType);
+                if (child->upperBound != "0" && child->lowerBound != "0") {
+                    // 数组声明
+                    symTable.AddSymbolArray(child->name, SymKind::VAR, child->varType, stoi(child->lowerBound), stoi(child->upperBound));
+                }
+                else{
+                    symTable.AddSymbol(child->name, SymKind::VAR, child->varType);
+                }
             }
         }
     }
@@ -562,6 +592,16 @@ SymbolNode* parseSymbolTable(const string& filePath) {
                 root = newNode; // 更新根节点为程序节点
             }
         }
+        else if (line.find("Array") != string::npos) {          //数组处理       //Array	Type: INTEGER | varKind | dir | Name: b | Offset: 2
+            iss >> token >> token >> token >> token >> token >> token >> token >> token >> token >> name >> token >> token;
+            SymbolNode* newNode = new SymbolNode("ARRAY", name, indent);
+            if(root == nullptr) root = newNode;
+            else if (newNode != nullptr) {
+                root->child = newNode;
+                newNode->parent = root;
+                root = newNode; // 更新根节点为程序节点
+            }
+        }
         else{                                                   //变量处理      //Type: INTEGER | varKind | dir | Name: v1 | Offset: 0
             iss >> token >> token >> token >> token >> token >> token >> token >> token >> name >> token >> token;
             SymbolNode* newNode = new SymbolNode("VARIABLE", name, indent);
@@ -590,10 +630,22 @@ void printSymbolTable(SymbolNode* node, ofstream& outputFile) {
     printSymbolTable(node->parent, outputFile);
 }
 
+// 检查是否为数字
+bool isNumberSimple(const string& s) {
+    if (s.empty()) return false;
+    
+    for (char c : s) {
+        if (!isdigit(c)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 bool isstmtk = 0;       //是否是语句节点
 int enterdepth = 0;     //当前层级深度
 // 语义分析函数主体
-void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, SymbolNode* Parsedsymboltable, int depth) {
+void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, SymbolNode* Parsedsymboltable, int depth, int childnum) {
 	if (!node) return;
 
     if (depth == enterdepth && enterdepth != 0) { // 过程声明节点
@@ -615,8 +667,7 @@ void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, S
 
 
         // 无声明的标识符
-        if (node->name != "const" && node->name != "OP") {
-            
+        if (node->name != "const" && node->name != "OP" && node->name != "[" && node->name != "]" && !isNumberSimple(node->name)) {
             if (!symTable->FindEntry(node->name, "one", &entry)) {
                 if(!symTable->FindEntry(node->name, "up", &entry)) {
                     cout << node->name << " 标识符未声明" << endl;
@@ -632,6 +683,17 @@ void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, S
             string expectedKind = "";
             string actualKind = entry->type;
             
+            // 数组类型下标越界错误
+            if (entry->lowerbound != 0 && entry->upperbound != 0) {
+                if (entry->lowerbound != 0 && entry->upperbound != 0) {
+                    if (stoi(node->parent->children[childnum+2]->name) <= entry->lowerbound || 
+                        stoi(node->parent->children[childnum+2]->name) >= entry->upperbound) {
+                        cout << node->name << " 数组类型下标越界错误" << "     下标范围" << entry->lowerbound << " ~ " << entry->upperbound << endl;
+                        outputFile << node->name << " 数组类型下标越界错误" << "     下标范围" << entry->lowerbound << " ~ " << entry->upperbound << endl;
+                    }
+                }
+            }
+
             // 根据上下文确定期望的标识符类别
             if (node->parent && node->parent->name == "CALL") {
                 expectedKind = "PROCEDURE"; // 调用语句中期望过程名
@@ -679,7 +741,7 @@ void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, S
 
 	// 递归分析子节点
 	for (size_t i = 0; i < node->children.size(); ++i) {
-        semanticAnalysis(node->children[i], symTable, outputFile, Parsedsymboltable, depth + 1);
+        semanticAnalysis(node->children[i], symTable, outputFile, Parsedsymboltable, depth + 1, i);
 	}
 }
 
@@ -715,5 +777,5 @@ void mainsemanticAnalysis(Node* tree, SymbolTable* symTable, ofstream& outputFil
     
 
     symTable->setcurrentlevel(0); // 设置当前层级
-    semanticAnalysis(tree, symTable, outputFile, Parsedsymboltable, depth);
+    semanticAnalysis(tree, symTable, outputFile, Parsedsymboltable, depth, 0);
 }

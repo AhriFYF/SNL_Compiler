@@ -39,15 +39,17 @@ struct Specificnode {
 
 // 符号表项结构
 struct SymbolEntry {
-	string name;        // 标识符名
-	string type;        // 类型（INTEGER, BOOL等）
-	string procName;    // 过程名
-	int level;          // 作用域层级
-	int offset;         // 在活动记录中的偏移量
-	SymbolEntry* next;  // 链表指针
+	string name;        		// 标识符名
+	string type;        		// 类型（INTEGER, BOOL等）
+	string procName;    		// 过程名
+	int level;          		// 作用域层级
+	int offset;         		// 在活动记录中的偏移量
+	int upperbound;				
+	int lowerbound;
+	SymbolEntry* next;  		// 链表指针
 
-	SymbolEntry(const string& n, const string& t, int lv, int off, const string& pn)
-		: name(n), type(t), level(lv), offset(off), next(nullptr), procName(pn) {}
+	SymbolEntry(const string& n, const string& t, int lv, int off, const string& pn, int low, int up)
+		: name(n), type(t), level(lv), offset(off), next(nullptr), procName(pn), lowerbound(low), upperbound(up){}
 };
 
 //定义语法分析树的节点
@@ -69,10 +71,16 @@ struct Node {
 	string varType;
 	string leftVar, rightVar;
 	string isparam;
+	string lowerBound = 0;          	// 下界（数组）
+	string upperBound = 0;          	// 上界（数组）
+	int size = 0;               		// 数组大小
 	vector<Node*> children;
-	Node* parent = nullptr; 	// 父节点指针
+	Node* parent = nullptr; 			// 父节点指针
 
-	Node(string t, string n = "", string vType = "", string par = "") : type(t), name(n), varType(vType), isparam(par) {}
+	//Node(string t, string n = "", string vType = "", string par = "") : type(t), name(n), varType(vType), isparam(par) {}
+	Node(string t, string n = "", string vType = "", string par = "", string lb = 0, string ub = 0) 
+		: type(t), name(n), varType(vType), isparam(par), lowerBound(lb), upperBound(ub) {
+	}
 };
 
 // 解析后的符号表节点结构
@@ -148,11 +156,13 @@ public:
 	bool AddSymbolType(const string& type, SymKind kind, const string& name);
 	bool AddSymbolParam(const string& procName, const string& type, SymKind kind, const string& name);
 	bool AddSymbolProc(const string& type, SymKind kind, const string& name);
+	bool AddSymbolArray(const string& type, SymKind kind, const string& name, int up, int low);
 
 	// 符号查找
 	SymbolEntry* LookupCurrentScope(const string& name);
 	SymbolEntry* Lookup(const string& name);
 	bool FindEntry(const string& id, const string& flag, SymbolEntry** entry);
+	string typereturn(const string& name);
 
 	// 域表操作
 	void AddFieldTable(const string& typeName, FieldChain* fields);
@@ -212,11 +222,12 @@ Treenode* read1(ofstream& outputFile); 								//生成读写表达式
 Treenode* if1(ofstream& outputFile);  								//生成选择表达式
 
 //定义语义分析器的函数
+bool isNumberSimple(const string& s);
 Node* parseSyntaxTree(const string& filePath);
 void printSyntaxTree(Node* node, int depth = 0);
 void PrintSyntaxTree(Node* node, int depth = 0, bool isLastChild = true);
 void BuildSymbolTable(Node* node, SymbolTable& symTable);
 SymbolNode* parseSymbolTable(const string& filePath);
 void printSymbolTable(SymbolNode* node, ofstream& outputFile);
-void semanticAnalysis(Node* tree, SymbolTable* symTable, ofstream& outputFile, SymbolNode* Parsedsymboltable, int depth);
+void semanticAnalysis(Node* tree, SymbolTable* symTable, ofstream& outputFile, SymbolNode* Parsedsymboltable, int depth, int childnum);
 void mainsemanticAnalysis(Node* tree, SymbolTable* symTable, ofstream& outputFile, SymbolNode* Parsedsymboltable, int depth);

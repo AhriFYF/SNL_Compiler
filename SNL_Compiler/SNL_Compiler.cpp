@@ -95,6 +95,8 @@ int main() {
 	mainsemanticAnalysis(syntaxTree, symTable, Semantic, Parsedsymboltable, 0);			//语义分析
 	cout << "语义错误信息已写入: " << Semanticfile << endl;
 
+	//中间代码生成
+	
 	//目标代码生成
 
 	Lexical.close();

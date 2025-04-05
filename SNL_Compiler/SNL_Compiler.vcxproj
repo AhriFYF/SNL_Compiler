@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Intermediate_code_generation.cpp" />
     <ClCompile Include="Semantic_Analysis.cpp" />
     <ClCompile Include="SNL_Compiler.cpp" />
     <ClCompile Include="Lexical_Analysis.cpp" />
