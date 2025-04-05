@@ -7,11 +7,25 @@ reserved word,INTEGER
 SEMI,;
 reserved word,VAR
 reserved word,INTEGER
-ID,v1
+ID,v2
 SEMI,;
 reserved word,VAR
 reserved word,INTEGER
-ID,v1
+ID,v2
+SEMI,;
+reserved word,CHAR
+ID,c3
+SEMI,;
+reserved word,ARRAY
+ LMIDPAREN,[
+NUM,1
+DOT,.
+DOT,.
+UNDERANGE,10
+RMIDPAREN,]
+reserved word,OF
+reserved word,INTEGER
+CHAR,b
 SEMI,;
 reserved word,PROCEDURE
 CHAR,q
@@ -28,6 +42,21 @@ reserved word,BEGIN
 CHAR,a
 ASSIGN,:=
 CHAR,i
+SEMI,;
+CHAR,a
+ASSIGN,:=
+ID,c3
+SEMI,;
+CHAR,b
+ LMIDPAREN,[
+UNDERANGE,100
+RMIDPAREN,]
+ASSIGN,:=
+NUM,10
+SEMI,;
+CHAR,a
+LPAREN,(
+RPAREN,)
 SEMI,;
 reserved word,WRITE
 LPAREN,(
@@ -49,7 +78,9 @@ ID,v1
 ASSIGN,:=
 ID,v1
 PLUS,+
-NUM,10
+COMMA,'
+NUM,1
+COMMA,'
 reserved word,ELSE
 ID,v1
 ASSIGN,:=

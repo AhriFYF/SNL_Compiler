@@ -1,18 +1,23 @@
 program p
 type t1 = integer;
-var integer v1;
-var integer v1;
+var integer v2;
+var integer v2;{标识符的重复定义}
+char c3;
+array [1..10] of integer b;
 procedure q
 (integer i);
 var integer a;
 begin
  a:=i;
+ a:=c3;{赋值语句的左右两边类型不相容}
+ b[100]:=10;{数组类型下标越界错误}
+ a();{标识符为非期望的标识符类别}
  write(a)
 end
 begin
- read(v1);
+ read(v1);{无声明的标识符}
  if v1<10 
-then v1:=v1+10 
+then v1:=v1+'1'
 else v1:=v1-10
 fi;
  q(v1)

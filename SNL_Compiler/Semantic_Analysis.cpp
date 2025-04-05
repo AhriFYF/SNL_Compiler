@@ -643,24 +643,32 @@ bool isNumberSimple(const string& s) {
 }
 
 bool isstmtk = 0;       //是否是语句节点
+bool isassignk = 0;     //是否是赋值节点
 int enterdepth = 0;     //当前层级深度
 // 语义分析函数主体
 void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, SymbolNode* Parsedsymboltable, int depth, int childnum) {
 	if (!node) return;
 
-    if (depth == enterdepth && enterdepth != 0) { // 过程声明节点
-        enterdepth = 0; // 重置层级深度
-        symTable->subcurrentlevel(1); // 退出作用域
+    if (depth == enterdepth && enterdepth != 0) {   // 过程声明节点
+        enterdepth = 0;                             // 重置层级深度
+        symTable->subcurrentlevel(1);               // 退出作用域
     }
-    if(node->type == "PROCEDURE") { // 过程声明节点
-        enterdepth = depth; // 记录当前层级深度
-        symTable->addcurrentlevel(1); // 进入新作用域
+    if(node->type == "PROCEDURE") {                 // 过程声明节点
+        enterdepth = depth;                         // 记录当前层级深度
+        symTable->addcurrentlevel(1);               // 进入新作用域
     }
 
     isstmtk = 0; // 重置语句节点标志
     if (node->type == "ExpK") {
         isstmtk = 1; // 语句节点
     }
+    if (node->type == "StmtK" && (node->name == "AssignK" || node->name == "THEN" || node->name == "ELSE")) {
+        isassignk = 1; // 赋值节点标志
+    }
+    else if(node->type == "StmtK" && (node->name != "AssignK" || node->name != "THEN" || node->name != "ELSE")) {
+        isassignk = 0; // 不是赋值节点
+    }
+
     if(isstmtk == 1) { // 语句节点
         SymbolEntry* entry = nullptr;
 
@@ -677,7 +685,7 @@ void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, S
         }
 
 
-
+        
         //标识符为非期望的标识符类别（类型标识符，变量标识符，过程名标识符）
         if (entry) {
             string expectedKind = "";
@@ -733,6 +741,54 @@ void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, S
                 errorMsg += ")";
                 cout << errorMsg << endl;
                 outputFile << errorMsg << endl;
+            }
+        }
+
+
+
+        // 赋值语句的左右两边类型不相容————赋值语句中，表达式中有类型不同的变量
+        if (isassignk == 1) {
+            SymbolEntry* entry1 = nullptr;
+            SymbolEntry* entry2 = nullptr;
+            if (node->parent && node->parent->name == "AssignK") {
+                if (node->parent->children[0]->name != "const" && node->parent->children[0]->name != "OP" 
+                    && node->parent->children[0]->name != "[" && node->parent->children[0]->name != "]" 
+                    && !isNumberSimple(node->parent->children[0]->name)) {
+                    if (!symTable->FindEntry(node->parent->children[0]->name, "one", &entry1)) {
+                        if (!symTable->FindEntry(node->parent->children[0]->name, "up", &entry1)) {
+                            cout << node->parent->children[0]->name << " 标识符未声明" << endl;
+                            outputFile << node->parent->children[0]->name << " 标识符未声明" << endl;
+                        }
+                    }
+                }
+                int k = 1;               // 第0个children和第k个children进行类型比较
+                while (node->parent && !node->parent->children.empty() && k < node->parent->children.size()) {
+                    Node* childNode = node->parent->children[k];
+                    if (!childNode) {
+                        k++;
+                        continue;  // 跳过空节点
+                    }
+                
+                    SymbolEntry* entry2 = nullptr;
+                    if (node->parent->children[k]->name != "const" && node->parent->children[k]->name != "OP" 
+                        && node->parent->children[k]->name != "[" && node->parent->children[k]->name != "]" 
+                        && !isNumberSimple(node->parent->children[k]->name)) {
+                        if (!symTable->FindEntry(childNode->name, "one", &entry2)) {
+                            if (!symTable->FindEntry(childNode->name, "up", &entry2)) {
+                                cout << childNode->name << " 标识符未声明" << endl;
+                                outputFile << childNode->name << " 标识符未声明" << endl;
+                            }
+                        }
+                    }
+
+                    if (entry1 && entry2) {
+                        if (entry1->type != entry2->type) {
+                            cout << node->parent->children[0]->name << " 和 " << node->parent->children[k]->name << " 类型不匹配，不能赋值" << endl;
+                            outputFile << node->parent->children[0]->name << " 和 " << node->parent->children[k]->name << " 类型不匹配，不能赋值" << endl;
+                        }
+                    }
+                    k++;
+                }
             }
         }
     }

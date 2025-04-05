@@ -7,12 +7,15 @@
       "RelativeMoniker": "D:0:0:{C23F4B47-0802-405A-A016-BBD5C59CBF87}|SNL_Compiler.vcxproj|solutionrelative:Semantic_Analysis.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{C23F4B47-0802-405A-A016-BBD5C59CBF87}|SNL_Compiler.vcxproj|C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\SNL_Compiler.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{C23F4B47-0802-405A-A016-BBD5C59CBF87}|SNL_Compiler.vcxproj|solutionrelative:SNL_Compiler.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{C23F4B47-0802-405A-A016-BBD5C59CBF87}|SNL_Compiler.vcxproj|C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\main.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{C23F4B47-0802-405A-A016-BBD5C59CBF87}|SNL_Compiler.vcxproj|solutionrelative:main.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C23F4B47-0802-405A-A016-BBD5C59CBF87}|SNL_Compiler.vcxproj|C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\SNL_Compiler.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{C23F4B47-0802-405A-A016-BBD5C59CBF87}|SNL_Compiler.vcxproj|solutionrelative:SNL_Compiler.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\include\\__msvc_string_view.hpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{C23F4B47-0802-405A-A016-BBD5C59CBF87}|SNL_Compiler.vcxproj|C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\Syntax_Analysis.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
@@ -21,10 +24,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{C23F4B47-0802-405A-A016-BBD5C59CBF87}|SNL_Compiler.vcxproj|C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\Lexical_Analysis.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{C23F4B47-0802-405A-A016-BBD5C59CBF87}|SNL_Compiler.vcxproj|solutionrelative:Lexical_Analysis.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C23F4B47-0802-405A-A016-BBD5C59CBF87}|SNL_Compiler.vcxproj|C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\Target_code_generation.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{C23F4B47-0802-405A-A016-BBD5C59CBF87}|SNL_Compiler.vcxproj|solutionrelative:Target_code_generation.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -34,7 +33,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 6,
           "Children": [
             {
               "$type": "Bookmark",
@@ -42,31 +41,46 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
+              "Title": "__msvc_string_view.hpp",
+              "DocumentMoniker": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\include\\__msvc_string_view.hpp",
+              "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\include\\__msvc_string_view.hpp",
+              "ToolTip": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\include\\__msvc_string_view.hpp",
+              "RelativeToolTip": "..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\include\\__msvc_string_view.hpp",
+              "ViewState": "AgIAAKUBAAAAAAAAAAAewLIBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-04-05T07:07:56.292Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "main.h",
               "DocumentMoniker": "C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\main.h",
               "RelativeDocumentMoniker": "main.h",
               "ToolTip": "C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\main.h",
               "RelativeToolTip": "main.h",
-              "ViewState": "AgIAAGoAAAAAAAAAAAAhwFIAAAAoAAAAAAAAAA==",
+              "ViewState": "AgIAANEAAAAAAAAAAADgvzMAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-04-01T01:52:37.489Z"
+              "WhenOpened": "2025-04-01T01:52:37.489Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
               "Title": "SNL_Compiler.cpp",
               "DocumentMoniker": "C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\SNL_Compiler.cpp",
               "RelativeDocumentMoniker": "SNL_Compiler.cpp",
               "ToolTip": "C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\SNL_Compiler.cpp",
               "RelativeToolTip": "SNL_Compiler.cpp",
-              "ViewState": "AgIAAFEAAAAAAAAAAAAhwGMAAAARAAAAAAAAAA==",
+              "ViewState": "AgIAAEcAAAAAAAAAAAAcwF4AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-03-30T09:23:58.615Z"
+              "WhenOpened": "2025-03-30T09:23:58.615Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "Lexical_Analysis.cpp",
               "DocumentMoniker": "C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\Lexical_Analysis.cpp",
               "RelativeDocumentMoniker": "Lexical_Analysis.cpp",
@@ -78,13 +92,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "Syntax_Analysis.cpp",
               "DocumentMoniker": "C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\Syntax_Analysis.cpp",
               "RelativeDocumentMoniker": "Syntax_Analysis.cpp",
               "ToolTip": "C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\Syntax_Analysis.cpp",
               "RelativeToolTip": "Syntax_Analysis.cpp",
-              "ViewState": "AQIAAAAAAAAAAAAAAADwvwAAAAAAAAAA",
+              "ViewState": "AgIAAAAAAAAAAAAAAADwvwAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-03-30T09:23:58.867Z"
             },
@@ -96,22 +110,10 @@
               "RelativeDocumentMoniker": "Semantic_Analysis.cpp",
               "ToolTip": "C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\Semantic_Analysis.cpp",
               "RelativeToolTip": "Semantic_Analysis.cpp",
-              "ViewState": "AgIAAEgCAAAAAAAAAAAcwEgCAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAOsCAAAAAAAAAAAcwOwCAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-03-30T09:23:58.868Z",
               "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "Target_code_generation.cpp",
-              "DocumentMoniker": "C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\Target_code_generation.cpp",
-              "RelativeDocumentMoniker": "Target_code_generation.cpp",
-              "ToolTip": "C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\Target_code_generation.cpp",
-              "RelativeToolTip": "Target_code_generation.cpp",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-03-30T09:23:58.869Z"
             }
           ]
         }

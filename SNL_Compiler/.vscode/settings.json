@@ -8,6 +8,8 @@
         "list": "cpp",
         "vector": "cpp",
         "string": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "xhash": "cpp",
+        "xutility": "cpp"
     }
 }

@@ -3,8 +3,10 @@ Prok
     TYPE
         Deck INTEGER t1
     VAR
-        Deck INTEGER v1
-        Deck INTEGER v1
+        Deck INTEGER v2
+        Deck INTEGER v2
+        Deck CHAR c3
+        Deck ARRAY [ 1 . . 10 ] OF INTEGER b
     PROCEDURE
         HDeck q
             Deck value param INTEGER i
@@ -14,6 +16,17 @@ Prok
                 StmtK AssignK
                     ExpK a IdK
                     ExpK i IdK
+                StmtK AssignK
+                    ExpK a IdK
+                    ExpK c3 IdK
+                StmtK AssignK
+                    ExpK b IdK
+                    ExpK [ IdK
+                    ExpK 100 IdK
+                    ExpK ] IdK
+                    ExpK const 10
+                StmtK CALL
+                    ExpK a IdK
                 StmtK WRITE
                     ExpK a IdK
     StmLK
@@ -27,7 +40,7 @@ Prok
                 ExpK v1 IdK
                 ExpK v1 IdK
                 ExpK OP +
-                ExpK const 10
+                ExpK const 1
             StmtK ELSE
                 ExpK v1 IdK
                 ExpK v1 IdK
