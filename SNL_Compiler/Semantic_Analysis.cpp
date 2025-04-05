@@ -644,6 +644,7 @@ bool isNumberSimple(const string& s) {
 
 bool isstmtk = 0;       //是否是语句节点
 bool isassignk = 0;     //是否是赋值节点
+bool iscallk = 0;       //是否是调用节点
 int enterdepth = 0;     //当前层级深度
 // 语义分析函数主体
 void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, SymbolNode* Parsedsymboltable, int depth, int childnum) {
@@ -662,11 +663,19 @@ void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, S
     if (node->type == "ExpK") {
         isstmtk = 1; // 语句节点
     }
+
     if (node->type == "StmtK" && (node->name == "AssignK" || node->name == "THEN" || node->name == "ELSE")) {
         isassignk = 1; // 赋值节点标志
     }
     else if(node->type == "StmtK" && (node->name != "AssignK" || node->name != "THEN" || node->name != "ELSE")) {
         isassignk = 0; // 不是赋值节点
+    }
+
+    if (node->type == "StmtK" && node->type == "CALL") {
+        iscallk = 1; // 调用节点标志
+    }
+    else if(node->type == "StmtK" && node->type != "CALL") {
+        iscallk = 0; // 不是调用节点
     }
 
     if(isstmtk == 1) { // 语句节点
@@ -719,26 +728,26 @@ void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, S
             }
             
             // 如果期望类别与实际类别不匹配
-            if (!expectedKind.empty() && actualKind != expectedKind) {
-                string errorMsg = node->name + " 标识符为非期望的标识符类别(期望: " + expectedKind + ", 实际: " + actualKind + ")";
-                cout << errorMsg << endl;
-                outputFile << errorMsg << endl;
-            }
-            
-            // 如果期望类别与实际类别不匹配
-            if (
-                !expectedKind.empty() && 
-                (
-                    actualKind != expectedKind &&
-                    !(actualKind == "INTEGER" || actualKind == "FLOAT" || actualKind == "DOUBLE" || actualKind == "CHAR")
-                )
-            ) 
-            {
-                string errorMsg = node->name + " 标识符为非期望的标识符类别(期望: " + expectedKind + ", 实际: " + actualKind;
-                if (!actualKind.empty()) {
-                    errorMsg += " of type " + actualKind;
+            if (!expectedKind.empty() && expectedKind == "PROCEDURE") {
+                if(node->parent->children[0] == node) {
+                    expectedKind = "PROCEDURE"; // 调用语句中期望过程名
                 }
-                errorMsg += ")";
+                else{
+                    expectedKind = "PARAMETER"; // 调用语句中期望参数名
+                }
+                if (expectedKind == "PROCEDURE" && actualKind != expectedKind){
+                    string errorMsg = node->name + " 标识符为非期望的标识符类别(期望: " + expectedKind + ", 实际: " + actualKind + ")";
+                    cout << errorMsg << endl;
+                    outputFile << errorMsg << endl;
+                }
+                else if (expectedKind == "PARAMETER" && (actualKind != "INTEGER" && actualKind != "FLOAT" && actualKind != "DOUBLE" && actualKind != "CHAR")) {
+                    string errorMsg = node->name + " 标识符为非期望的标识符类别(期望: " + expectedKind + ", 实际: " + actualKind + ")";
+                    cout << errorMsg << endl;
+                    outputFile << errorMsg << endl;
+                }
+            }
+            else if (!expectedKind.empty() && actualKind != expectedKind) {
+                string errorMsg = node->name + " 标识符为非期望的标识符类别(期望: " + expectedKind + ", 实际: " + actualKind + ")";
                 cout << errorMsg << endl;
                 outputFile << errorMsg << endl;
             }
@@ -747,10 +756,18 @@ void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, S
 
 
         // 赋值语句的左右两边类型不相容————赋值语句中，表达式中有类型不同的变量
+        // 赋值语句左端不是变量标识符
         if (isassignk == 1) {
             SymbolEntry* entry1 = nullptr;
             SymbolEntry* entry2 = nullptr;
             if (node->parent && node->parent->name == "AssignK") {
+
+                // 检查赋值语句左端是否是变量标识符(语法树错误待解决)
+                if (isNumberSimple(node->parent->children[0]->name)) {
+                    cout << node->parent->children[0]->name << " 赋值语句左端不是变量标识符" << endl;
+                    outputFile << node->parent->children[0]->name << " 赋值语句左端不是变量标识符" << endl;
+                }
+
                 if (node->parent->children[0]->name != "const" && node->parent->children[0]->name != "OP" 
                     && node->parent->children[0]->name != "[" && node->parent->children[0]->name != "]" 
                     && !isNumberSimple(node->parent->children[0]->name)) {
@@ -791,9 +808,60 @@ void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, S
                 }
             }
         }
+
+
+
+        // 过程调用中 ，形实参类型不匹配
+        if (iscallk == 1) {
+            SymbolEntry* entry1 = nullptr;
+            SymbolEntry* entry2 = nullptr;
+            if (node->parent && node->parent->name == "CALL") {
+                // 检查调用语句中是否有未声明的标识符
+                if (node->parent->children[0]->name != "const" && node->parent->children[0]->name != "OP" 
+                    && node->parent->children[0]->name != "[" && node->parent->children[0]->name != "]" 
+                    && !isNumberSimple(node->parent->children[0]->name)) {
+                    if (!symTable->FindEntry(node->parent->children[0]->name, "one", &entry1)) {
+                        if (!symTable->FindEntry(node->parent->children[0]->name, "up", &entry1)) {
+                            cout << node->parent->children[0]->name << " 标识符未声明" << endl;
+                            outputFile << node->parent->children[0]->name << " 标识符未声明" << endl;
+                        }
+                    }
+                }
+
+                // 检查实参类型与形参类型是否匹配
+                int k = 1; // 从第一个实参开始
+                while (node->parent && !node->parent->children.empty() && k < node->parent->children.size()) {
+                    Node* childNode = node->parent->children[k];
+                    if (!childNode) {
+                        k++;
+                        continue;  // 跳过空节点
+                    }
+                
+                    if (node->parent && node->parent->children[k]->name != "const" && node->parent && node->parent->children[k]->name != "OP" 
+                        && node->parent && node->parent->children[k]->name != "[" && node->parent && node->parent->children[k]->name != "]" 
+                        && !isNumberSimple(node->parent->children[k]->name)) {
+                        if (!symTable->FindEntry(childNode->name, "one", &entry2)) {
+                            if (!symTable->FindEntry(childNode->name, "up", &entry2)) {
+                                cout << childNode->name << " 标识符未声明" << endl;
+                                outputFile << childNode->name << " 标识符未声明" << endl;
+                            }
+                        }
+                    }
+
+                    if (entry1 && entry2) {
+                        if (entry1 != entry2) {
+                            cout << node->parent->children[0]->name << " 和 " << node->parent->children[k]->name << " 形实参类型不匹配" << endl;
+                            outputFile << node->parent->children[0]->name << " 和 " << node->parent->children[k]->name << " 形实参类型不匹配" << endl;
+                        }
+                    }
+                    k++;
+                }
+            }
+        }
+
+
+
     }
-
-
 
 	// 递归分析子节点
 	for (size_t i = 0; i < node->children.size(); ++i) {

@@ -21,7 +21,7 @@ char SingleDelimiter[18][20] = { "PLUS","MINUS","TIMES","OVER","LPAREN","RPAREN"
 " LMIDPAREN","RMIDPAREN", "SEMI","DOT","LT","COLON","EQ","COMMA","ASSIGN","RT","SY","JSP1" };
 
 // 保留字的命名,为了实现映射关系
-string  reservedWords[21] = { "program","type","var","procedure","begin","end","array","of","record","if","then","else",
+string reservedWords[21] = { "program","type","var","procedure","begin","end","array","of","record","if","then","else",
 "fi","while","do","endwh","read","write","return","integer","char" };
 string reservedWords1[21] = { "PROGRAM","TYPE","VAR","PROCEDURE","BEGIN","END","ARRAY","OF","RECORD","IF","THEN","ELSE",
 "FI","WHILE","DO","ENDWH","READ","WRITE","RETURN","INTEGER","CHAR" };

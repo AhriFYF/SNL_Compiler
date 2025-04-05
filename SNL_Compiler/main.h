@@ -188,6 +188,9 @@ extern int size2;
 extern int debugtest;
 extern int maxlevel;
 extern int currentOffset;
+extern bool isstmtk;       //是否是语句节点
+extern bool isassignk;     //是否是赋值节点
+extern int enterdepth;     //当前层级深度
 
 //分界符的命名+ | - | *| / | ( | ) | [ | ] | ; | . | < | : | = | ' | := | > | " | ,
 extern char SingleDelimiter[18][20];
