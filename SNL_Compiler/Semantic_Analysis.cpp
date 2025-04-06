@@ -652,9 +652,37 @@ bool isNumberSimple(const string& s) {
     return true;
 }
 
+bool isStrictBool(Node* node, SymbolTable* symTable) {
+    if (!node) return false;
+
+    // 1. 直接是 true/false
+    if (node->name == "true" || node->name == "false") {
+        return true;
+    }
+
+    // 2. 是布尔变量
+    SymbolEntry* entry = nullptr;
+    if (symTable->FindEntry(node->name, "one", &entry)) {
+        return (entry->type == "bool");
+    }
+
+    // 3. 是比较运算符（如 <, >, ==）
+    if (node->varType == "<" || node->varType == ">" /* 其他比较运算符 */) {
+        return true;
+    }
+
+    // 4. 是逻辑运算（如 &&, ||, !）
+    if (node->varType == "&&" || node->varType == "||" || node->varType == "!") {
+        return true;
+    }
+
+    return false;
+}
+
 bool isstmtk = 0;       //是否是语句节点
 bool isassignk = 0;     //是否是赋值节点
 bool iscallk = 0;       //是否是调用节点
+bool isconditonk = 0;   //是否是条件节点
 int enterdepth = 0;     //当前层级深度
 // 语义分析函数主体
 void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, SymbolNode* Parsedsymboltable, int depth, int childnum) {
@@ -669,11 +697,13 @@ void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, S
         symTable->addcurrentlevel(1);               // 进入新作用域
     }
 
+    // 语句节点
     isstmtk = 0; // 重置语句节点标志
     if (node->type == "ExpK") {
         isstmtk = 1; // 语句节点
     }
 
+    // 赋值节点
     if (node->type == "StmtK" && (node->name == "AssignK" || node->name == "THEN" || node->name == "ELSE")) {
         isassignk = 1; // 赋值节点标志
     }
@@ -681,11 +711,20 @@ void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, S
         isassignk = 0; // 不是赋值节点
     }
 
+    // 调用节点
     if (node->type == "StmtK" && node->name == "CALL") {
         iscallk = 1; // 调用节点标志
     }
     else if(node->type == "StmtK" && node->name != "CALL") {
         iscallk = 0; // 不是调用节点
+    }
+
+    // 条件节点
+    if (node->type == "StmtK" && (node->name == "IF" || node->name == "WHILE")) {
+        isconditonk = 1; // 条件节点标志
+    }
+    else if(node->type == "StmtK" && !(node->name == "IF" || node->name == "WHILE")) {
+        isconditonk = 0; // 不是条件节点
     }
 
     if(isstmtk == 1) { // 语句节点
@@ -887,7 +926,47 @@ void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, S
         }
 
 
+        
+        // if 和 while 语句的条件部分不是bool类型
+        if (isconditonk == 1) {
+            SymbolEntry* entry1 = nullptr;
+            int isbool = 0; // 是否是布尔类型
+            if (node->parent && node->parent->name == "IF") {
+                // 检查表示式是否为bool类型
+                int k = 0; // 从第零个节点开始
+                while (node->parent && !node->parent->children.empty() && k < node->parent->children.size()) {
+                    Node* childNode = node->parent->children[k];
+                    if (!childNode) {
+                        k++;
+                        continue;  // 跳过空节点
+                    }
+                
+                    if (node->parent && node->parent->children[k]->name != "const" && node->parent && node->parent->children[k]->name != "OP" 
+                        && node->parent && node->parent->children[k]->name != "[" && node->parent && node->parent->children[k]->name != "]" 
+                        && node->parent && node->parent->children[k]->name != "THEN" && node->parent && node->parent->children[k]->name != "ELSE" 
+                        && !isNumberSimple(node->parent->children[k]->name)) {
+                        if (!symTable->FindEntry(childNode->name, "one", &entry1)) {
+                            if (!symTable->FindEntry(childNode->name, "up", &entry1)) {
+                                cout << childNode->name << " 标识符未声明" << endl;
+                                outputFile << childNode->name << " 标识符未声明" << endl;
+                            }
+                        }
+                    }
+                    if (entry1) {
+                        if (isStrictBool(node->parent->children[k], symTable)) {
+                            isbool = 1;     // 如果是布尔类型，设置标志
+                            break;          // 如果已经是布尔类型，跳出循环
+                        }
+                    }
+                    k++;
+                }
+            }
 
+            if (isbool == 0) {
+                cout << node->parent->name << " 条件表达式条件部分不是bool类型" << endl;
+                outputFile << node->parent->name << " 条件表达式条件部分不是bool类型" << endl;
+            }
+        }
     }
 
 	// 递归分析子节点

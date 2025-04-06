@@ -188,13 +188,14 @@ extern int size2;
 extern int debugtest;
 extern int maxlevel;
 extern int currentOffset;
-extern bool isstmtk;       //是否是语句节点
-extern bool isassignk;     //是否是赋值节点
-extern int enterdepth;     //当前层级深度
-extern int isparam; // 是否是参数节点
-extern int num; // 记录参数个数
-extern int procnum; // 记录过程个数
-extern vector<vector<string>> paramvector; // 参数节点栈
+extern int num; 								// 记录参数个数
+extern int procnum; 							// 记录过程个数
+extern vector<vector<string>> paramvector; 		// 参数节点栈
+extern bool isstmtk;       	//是否是语句节点
+extern bool isassignk;     	//是否是赋值节点
+extern int enterdepth;     	//当前层级深度
+extern int isparam; 		//是否是参数节点
+extern bool isconditonk;	//是否是条件节点
 
 //分界符的命名+ | - | *| / | ( | ) | [ | ] | ; | . | < | : | = | ' | := | > | " | ,
 extern char SingleDelimiter[18][20];
@@ -236,5 +237,6 @@ void PrintSyntaxTree(Node* node, int depth = 0, bool isLastChild = true);
 void BuildSymbolTable(Node* node, SymbolTable& symTable);
 SymbolNode* parseSymbolTable(const string& filePath);
 void printSymbolTable(SymbolNode* node, ofstream& outputFile);
+bool isStrictBool(Node* node, SymbolTable* symTable);
 void semanticAnalysis(Node* tree, SymbolTable* symTable, ofstream& outputFile, SymbolNode* Parsedsymboltable, int depth, int childnum);
 void mainsemanticAnalysis(Node* tree, SymbolTable* symTable, ofstream& outputFile, SymbolNode* Parsedsymboltable, int depth);
