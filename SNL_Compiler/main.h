@@ -88,9 +88,10 @@ struct Node
 	string varType;
 	string leftVar, rightVar;
 	string isparam;
-	string lowerBound = 0; // 下界（数组）
-	string upperBound = 0; // 上界（数组）
-	int size = 0;		   // 数组大小
+	string lowerBound = 0; 	// 下界（数组）
+	string upperBound = 0; 	// 上界（数组）
+	string consttype; 		// 常量类型
+	int size = 0;		   	// 数组大小
 	vector<Node *> children;
 	Node *parent = nullptr; // 父节点指针
 

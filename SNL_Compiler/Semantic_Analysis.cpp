@@ -35,6 +35,10 @@ Node* parseSyntaxTree(const string& filePath) {
             newNode = new Node(type, arrayType, arrayName, "0", par1, upper);
             newNode->size = stoi(upper) - stoi(par1) + 1; // 计算数组大小
         }
+        else if (varType == "const") {
+            newNode = new Node(type, varType, name, "0", "0", "0");
+            newNode->consttype = par1; // 常量类型
+        }
 		else {
 			newNode = new Node(type, varType, name, "0", "0", "0");
 		}
@@ -733,7 +737,7 @@ void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, S
 
 
         // 无声明的标识符
-        if (node->name != "const" && node->name != "OP" && node->name != "[" && node->name != "]" && !isNumberSimple(node->name)) {
+        if (node->name != "const" && node->name != "OP" && node->name != "[" && node->name != "]" && !isNumberSimple(node->varType)) {
             if (!symTable->FindEntry(node->name, "one", &entry)) {
                 if(!symTable->FindEntry(node->name, "up", &entry)) {
                     cout << node->name << " 标识符未声明" << endl;
@@ -742,7 +746,71 @@ void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, S
             }
         }
 
-
+        // 表达式中运算符的分量的类型不相容，处理常量节点
+        if (node->name == "const") {
+            SymbolEntry* entry1 = nullptr;
+            SymbolEntry* entry2 = nullptr;
+            // 找到常数children
+            int t = 0;
+            while (node->parent && !node->parent->children.empty() && t < node->parent->children.size()) {
+                if (node->parent->children[t]->name == "const" && node->parent->children[t]->varType == node->varType) {
+                    break;
+                }
+                t++;
+            }
+            if(node->parent->children.size()>=3 && node->parent->children[t-1]->name == "[") {
+                // 跳过数组节点
+            }
+            else {
+                // 第t个children和第k个children进行类型比较
+                int k = 0; 
+                while (node->parent && !node->parent->children.empty() && k < node->parent->children.size()) {
+                    if (k == t) {
+                        k++;
+                        continue;  // 跳过常数节点
+                    }
+                    Node* childNode = node->parent->children[k];
+                    if (!childNode) {
+                        k++;
+                        continue;  // 跳过空节点
+                    }
+                    SymbolEntry* entry2 = nullptr;
+                    if (node->parent->children[k]->name != "const" && node->parent->children[k]->name != "OP" 
+                        && node->parent->children[k]->name != "[" && node->parent->children[k]->name != "]" 
+                        && node->parent->children[k]->name != "THEN" && node->parent->children[k]->name != "ELSE"
+                        && !isNumberSimple(node->parent->children[k]->name)) {
+                        if (!symTable->FindEntry(childNode->name, "one", &entry2)) {
+                            if (!symTable->FindEntry(childNode->name, "up", &entry2)) {
+                                cout << childNode->name << " 标识符未声明" << endl;
+                                outputFile << childNode->name << " 标识符未声明" << endl;
+                            }
+                        }
+                    }
+                    
+                    if (entry2) {
+                        if (
+                            !(node->consttype == "INTC" && entry2->type == "INTEGER") &&
+                            !(node->consttype == "CHARC" && entry2->type == "CHAR")
+                            ){
+                            if (entry2->lowerbound != 0 && entry2->upperbound != 0) {
+                                if (
+                                    !(node->consttype == "INTC" && entry2->name == "INTEGER") &&
+                                    !(node->consttype == "CHARC" && entry2->name == "CHAR")
+                                    ){
+                                        cout << node->parent->children[t]->varType << " 和 " << node->parent->children[k]->name << " 表达式中运算符的分量的类型不相容" << endl;
+                                        outputFile << node->parent->children[t]->varType << " 和 " << node->parent->children[k]->name << " 表达式中运算符的分量的类型不相容" << endl;
+                                    }
+                            }
+                            else{
+                                cout << node->parent->children[t]->varType << " 和 " << node->parent->children[k]->name << " 表达式中运算符的分量的类型不相容" << endl;
+                                outputFile << node->parent->children[t]->varType << " 和 " << node->parent->children[k]->name << " 表达式中运算符的分量的类型不相容" << endl;
+                            }
+                        }
+                    }
+                    k++;
+                }
+            }
+        }
         
         //标识符为非期望的标识符类别（类型标识符，变量标识符，过程名标识符）
         if (entry) {
@@ -805,22 +873,23 @@ void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, S
 
 
         // 赋值语句的左右两边类型不相容————赋值语句中，表达式中有类型不同的变量
-        // 赋值语句左端不是变量标识符
-        // 表达式中运算符的分量的类型不相容 
+        // 赋值语句左端不是变量标识符 
         if (isassignk == 1) {
             SymbolEntry* entry1 = nullptr;
             SymbolEntry* entry2 = nullptr;
             if (node->parent && node->parent->name == "AssignK") {
 
-                // 检查赋值语句左端是否是变量标识符(语法树错误待解决)
-                if (isNumberSimple(node->parent->children[0]->name)) {
-                    cout << node->parent->children[0]->name << " 赋值语句左端不是变量标识符" << endl;
-                    outputFile << node->parent->children[0]->name << " 赋值语句左端不是变量标识符" << endl;
+                // 检查赋值语句左端是否是变量标识符
+                if (isNumberSimple(node->parent->children[0]->varType)) {
+                    if (node->parent->children.size() >= 2) {
+                        cout << node->parent->children[0]->varType << " :=" << node->parent->children[1]->name << " 赋值语句左端不是变量标识符 " << endl;
+                        outputFile << node->parent->children[0]->varType << " :=" << node->parent->children[1]->name << " 赋值语句左端不是变量标识符 " << endl;
+                    }
                 }
 
                 if (node->parent->children[0]->name != "const" && node->parent->children[0]->name != "OP" 
                     && node->parent->children[0]->name != "[" && node->parent->children[0]->name != "]" 
-                    && !isNumberSimple(node->parent->children[0]->name)) {
+                    && !isNumberSimple(node->parent->children[0]->varType)) {
                     if (!symTable->FindEntry(node->parent->children[0]->name, "one", &entry1)) {
                         if (!symTable->FindEntry(node->parent->children[0]->name, "up", &entry1)) {
                             cout << node->parent->children[0]->name << " 标识符未声明" << endl;
@@ -848,11 +917,6 @@ void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, S
                         }
                     }
                     
-                    // 处理常量节点
-                    if (node->parent->children[k]->name == "const"){
-
-                    }
-
                     if (entry1 && entry2) {
                         if (entry1->type != entry2->type) {
                             cout << node->parent->children[0]->name << " 和 " << node->parent->children[k]->name << " 赋值语句的左右两边类型不相容" << endl;
@@ -875,7 +939,7 @@ void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, S
                 // 检查调用语句中是否有未声明的标识符
                 if (node->parent->children[0]->name != "const" && node->parent->children[0]->name != "OP" 
                     && node->parent->children[0]->name != "[" && node->parent->children[0]->name != "]" 
-                    && !isNumberSimple(node->parent->children[0]->name)) {
+                    && !isNumberSimple(node->parent->children[0]->varType)) {
                     if (!symTable->FindEntry(node->parent->children[0]->name, "one", &entry1)) {
                         if (!symTable->FindEntry(node->parent->children[0]->name, "up", &entry1)) {
                             cout << node->parent->children[0]->name << " 标识符未声明" << endl;
@@ -895,7 +959,7 @@ void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, S
                 
                     if (node->parent && node->parent->children[k]->name != "const" && node->parent && node->parent->children[k]->name != "OP" 
                         && node->parent && node->parent->children[k]->name != "[" && node->parent && node->parent->children[k]->name != "]" 
-                        && !isNumberSimple(node->parent->children[k]->name)) {
+                        && !isNumberSimple(node->parent->children[k]->varType)) {
                         if (!symTable->FindEntry(childNode->name, "one", &entry2)) {
                             if (!symTable->FindEntry(childNode->name, "up", &entry2)) {
                                 cout << childNode->name << " 标识符未声明" << endl;
@@ -950,7 +1014,7 @@ void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, S
                     if (node->parent && node->parent->children[k]->name != "const" && node->parent && node->parent->children[k]->name != "OP" 
                         && node->parent && node->parent->children[k]->name != "[" && node->parent && node->parent->children[k]->name != "]" 
                         && node->parent && node->parent->children[k]->name != "THEN" && node->parent && node->parent->children[k]->name != "ELSE" 
-                        && !isNumberSimple(node->parent->children[k]->name)) {
+                        && !isNumberSimple(node->parent->children[k]->varType)) {
                         if (!symTable->FindEntry(childNode->name, "one", &entry1)) {
                             if (!symTable->FindEntry(childNode->name, "up", &entry1)) {
                                 cout << childNode->name << " 标识符未声明" << endl;
