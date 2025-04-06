@@ -6,6 +6,7 @@ string Lexicalfile = "text\\Lexical Analysis.txt";
 string Syntaxfile = "text\\Syntax Analysis.txt";
 string Symboltablefile = "text\\Symbol table.txt";
 string Semanticfile = "text\\Semantic Analysis.txt";
+string Intermediatecodefile = "text\\Intermediate code generation.txt";
 string Targetcodefile = "text\\Target code generation.txt";
 
 int size1 = 0;			//token序列的长度
@@ -48,6 +49,7 @@ int main() {
 	ofstream Symboltable(Symboltablefile);
 	ofstream Semantic(Semanticfile);
 	ofstream Targetcode(Targetcodefile);
+	ifstream infile(Syntaxfile);
 
 	if (!Lexical) {
 		cerr << "无法创建文件: " << Lexicalfile << endl;
@@ -93,10 +95,14 @@ int main() {
 	SymbolNode* Parsedsymboltable = parseSymbolTable(Symboltablefile);					//解析符号表
 	printSymbolTable(Parsedsymboltable, Symboltable);									//打印解析后的符号表
 	mainsemanticAnalysis(syntaxTree, symTable, Semantic, Parsedsymboltable, 0);			//语义分析
-	cout << "语义错误信息已写入: " << Semanticfile << endl;
+	cout << "语义错误信息已写入: " << Semanticfile << endl << endl;
 
 	//中间代码生成
-	
+    processSyntaxTree(infile);	//处理语法树，生成中间代码
+	cout << "\nIntermediate code generation:" << endl;
+    writeToFile("text\\Intermediate code generation.txt");
+    cout << "四元式中间代码已生成并写入 text\\Intermediate code generation.txt" << endl << endl;
+
 	//目标代码生成
 
 	Lexical.close();

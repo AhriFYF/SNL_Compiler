@@ -8,10 +8,11 @@
 #include <cctype>
 #include <vector>
 #include <windows.h>
-#include <fstream>
 #include <stack>
 #include <memory>
 #include <list>
+#include <iomanip>
+#include <filesystem>
 
 using namespace std;
 
@@ -22,6 +23,7 @@ extern string Lexicalfile;
 extern string Syntaxfile;
 extern string Symboltablefile;
 extern string Semanticfile;
+extern string Intermediatecodefile;
 extern string Targetcodefile;
 
 //定义token序列的结构
@@ -114,6 +116,10 @@ struct FieldChain {
 	FieldChain() : head(nullptr) {}
 };
 
+struct Quadruple {
+    string op, arg1, arg2, result;
+};
+
 // 符号表类
 class SymbolTable {
 private:
@@ -196,6 +202,9 @@ extern bool isassignk;     	//是否是赋值节点
 extern int enterdepth;     	//当前层级深度
 extern int isparam; 		//是否是参数节点
 extern bool isconditonk;	//是否是条件节点
+extern vector<Quadruple> quads;
+extern int tempCount;
+extern int labelCount;
 
 //分界符的命名+ | - | *| / | ( | ) | [ | ] | ; | . | < | : | = | ' | := | > | " | ,
 extern char SingleDelimiter[18][20];
@@ -240,3 +249,9 @@ void printSymbolTable(SymbolNode* node, ofstream& outputFile);
 bool isStrictBool(Node* node, SymbolTable* symTable);
 void semanticAnalysis(Node* tree, SymbolTable* symTable, ofstream& outputFile, SymbolNode* Parsedsymboltable, int depth, int childnum);
 void mainsemanticAnalysis(Node* tree, SymbolTable* symTable, ofstream& outputFile, SymbolNode* Parsedsymboltable, int depth);
+
+//定义中间代码生成的函数
+void processSyntaxTree(istream& input);
+void writeToFile(const string& filename);
+string newTemp();
+string newLabel();
