@@ -6,7 +6,7 @@ Prok
         Deck INTEGER v2
         Deck INTEGER v2
         Deck CHAR c3
-        Deck ARRAY [ 1 . . 10 ] OF INTEGER b
+        Deck ARRAY [ 1 .. 10 ] OF INTEGER b
     PROCEDURE
         HDeck q
             Deck value param INTEGER i
@@ -24,9 +24,9 @@ Prok
                 StmtK AssignK
                     ExpK b IdK
                     ExpK [ IdK
-                    ExpK 100 IdK
+                    ExpK const 100 INTC
                     ExpK ] IdK
-                    ExpK const 10
+                    ExpK const 10 INTC
                 StmtK CALL
                     ExpK a IdK
                 StmtK WRITE
@@ -37,17 +37,17 @@ Prok
         StmtK IF
             ExpK v2 IdK
             ExpK OP +
-            ExpK const 10
+            ExpK 10 IdK
             StmtK THEN
                 ExpK v1 IdK
                 ExpK v1 IdK
                 ExpK OP +
-                ExpK const 10
+                ExpK const 10 INTC
             StmtK ELSE
                 ExpK v1 IdK
                 ExpK v1 IdK
                 ExpK OP -
-                ExpK const 10
+                ExpK const 10 INTC
         StmtK CALL
             ExpK q IdK
             ExpK c3 IdK

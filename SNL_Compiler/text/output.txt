@@ -1,0 +1,102 @@
+reserved word,PROGRAM
+ID,p
+reserved word,TYPE
+ID,t1
+EQ,=
+reserved word,INTEGER
+SEMI,;
+reserved word,VAR
+reserved word,INTEGER
+ID,v2
+SEMI,;
+reserved word,VAR
+reserved word,INTEGER
+ID,v2
+SEMI,;
+reserved word,CHAR
+ID,c3
+SEMI,;
+reserved word,ARRAY
+LMIDPAREN,[
+INTC,1
+UNDERANGE,..
+INTC,10
+RMIDPAREN,]
+reserved word,OF
+reserved word,INTEGER
+ID,b
+SEMI,;
+reserved word,PROCEDURE
+ID,q
+LPAREN,(
+reserved word,INTEGER
+ID,i
+RPAREN,)
+SEMI,;
+reserved word,VAR
+reserved word,INTEGER
+ID,a
+SEMI,;
+reserved word,BEGIN
+ID,a
+ASSIGN,:=
+ID,i
+SEMI,;
+ID,a
+ASSIGN,:=
+ID,c3
+SEMI,;
+INTC,1
+ASSIGN,:=
+ID,a
+SEMI,;
+ID,b
+LMIDPAREN,[
+INTC,100
+RMIDPAREN,]
+ASSIGN,:=
+INTC,10
+SEMI,;
+ID,a
+LPAREN,(
+RPAREN,)
+SEMI,;
+reserved word,WRITE
+LPAREN,(
+ID,a
+RPAREN,)
+reserved word,END
+reserved word,BEGIN
+reserved word,READ
+LPAREN,(
+ID,v1
+RPAREN,)
+SEMI,;
+reserved word,IF
+ID,v2
+PLUS,+
+INTC,10
+reserved word,THEN
+ID,v1
+ASSIGN,:=
+ID,v1
+PLUS,+
+INTC,10
+reserved word,ELSE
+ID,v1
+ASSIGN,:=
+ID,v1
+MINUS,-
+INTC,10
+reserved word,FI
+SEMI,;
+ID,q
+LPAREN,(
+ID,c3
+COMMA,,
+ID,v2
+RPAREN,)
+SEMI,;
+reserved word,END
+DOT,.
+EOF,EOF

@@ -4,11 +4,8 @@ var t v1 ;
  char v2;
 begin 
  read(v1);
- v1:=v1*10;
- v1 = "d";
- v2:= 'a';
+ v1:=1009;
+ v1 = '100';
+ v2:= '1';
  write(v1)
 end.
-
-
-
