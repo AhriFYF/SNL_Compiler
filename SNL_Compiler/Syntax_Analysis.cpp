@@ -369,7 +369,7 @@ Treenode *probody(ofstream &outputFile)
 // 得到一个语句节点
 Treenode *stmt(ofstream &outputFile)
 {
-	if (token[subscript].value1 == "ID" || token[subscript].value1 == "CHAR")
+	if (token[subscript].value1 == "ID" || token[subscript].value1 == "CHARC" || token[subscript].value1 == "INTC")
 	{
 		// 说明是赋值节点语句,生成赋值节点
 		Treenode *tmp1 = new Treenode;
@@ -514,38 +514,25 @@ Treenode *assign1(ofstream &outputFile)
 				if (token[subscript].value1 == "INTC")
 				{
 					cout << "ExpK" << " " << "const" << " " << token[subscript].value2 << " INTC" << endl;
-					outputFile << "ExpK" << " " << "const" << " " << token[subscript].value2 << " INTC"<<endl;
+					outputFile << "ExpK" << " " << "const" << " " << token[subscript].value2 << " INTC" << endl;
 				}
 				else
 				{
-					if (token[subscript].value1 == "CHARC"){
+					if (token[subscript].value1 == "CHARC")
+					{
 						cout << "ExpK" << " " << "const" << " " << token[subscript].value2 << " CHARC" << endl;
-						outputFile << "ExpK" << " " << "const" << " " << token[subscript].value2 << " CHARC"<<endl;
+						outputFile << "ExpK" << " " << "const" << " " << token[subscript].value2 << " CHARC" << endl;
 					}
-					else{
+					else
+					{
 						cout << "ExpK" << " " << token[subscript].value2 << " " << "IdK" << endl;
 						outputFile << "ExpK" << " " << token[subscript].value2 << " " << "IdK" << endl;
 					}
 				}
-				// cout << "ExpK" << " " << token[subscript].value2 << " " << "IdK" << endl;
-				// outputFile << "ExpK" << " " << token[subscript].value2 << " " << "IdK" << endl;
 			}
 			subscript = subscript + 1;
 			size2 = size2 - 1;
 		}
-		// tmp1->nodekind = "ExpK";
-		// tmp1->specificnode.stmt = "IdK";
-		// size2 = size2 + 1;
-		// printq(size2, outputFile);
-		// if ((token[subscript].value1 == "PLUS") || (token[subscript].value1 == "MINUS") || (token[subscript].value1 == "TIMES")
-		//	|| (token[subscript].value1 == "OVER")) {
-		//	cout << "ExpK" << " " << "OP" << " " << token[subscript].value2 << endl;
-		// }
-		// else {
-		//	cout << "ExpK" << " " << token[subscript].value2 << " " << "IdK" << endl;
-		// }
-		// subscript = subscript + 1;
-		// size2 = size2 - 1;
 	}
 	if (token[subscript].value1 == "SEMI")
 	{
@@ -637,10 +624,10 @@ Treenode *if1(ofstream &outputFile)
 			else
 			{
 				// 整数
-				if (token[subscript].value1 == "NUM")
+				if (token[subscript].value1 == "INTC")
 				{
-					cout << "ExpK" << " " << "const" << " " << token[subscript].value2 << endl;
-					outputFile << "ExpK" << " " << "const" << " " << token[subscript].value2 << endl;
+					cout << "ExpK" << " " << "const" << " " << token[subscript].value2 << " INTC" << endl;
+					outputFile << "ExpK" << " " << "const" << " " << token[subscript].value2 << " INTC" << endl;
 				}
 				else
 				{
