@@ -26,7 +26,7 @@ Node* parseSyntaxTree(const string& filePath) {
 		string type, name, varType, par1, par2, token, arrayType, arrayName, upper, lower;
         // 读取类型、变量名、变量类型、可能的参数1、参数2、token、数组类型、数组名
         // 数组下界在par1 上界在upper
-		iss >> type >> varType >> name >> par1 >> par2 >> token >> upper >> token >> token >> arrayType >> arrayName; 
+		iss >> type >> varType >> name >> par1 >> par2 >> upper >> token >> token >> arrayType >> arrayName; 
 		Node* newNode = nullptr;
 		if (name == "param") {
 			newNode = new Node(type, par1, par2, "1", "0", "0");
@@ -752,8 +752,8 @@ void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, S
             // 数组类型下标越界错误
             if (entry->lowerbound != 0 && entry->upperbound != 0) {
                 if (entry->lowerbound != 0 && entry->upperbound != 0) {
-                    if (stoi(node->parent->children[childnum+2]->name) <= entry->lowerbound || 
-                        stoi(node->parent->children[childnum+2]->name) >= entry->upperbound) {
+                    if (stoi(node->parent->children[childnum+2]->varType) <= entry->lowerbound || 
+                        stoi(node->parent->children[childnum+2]->varType) >= entry->upperbound) {
                         cout << node->name << " 数组类型下标越界错误" << "     下标范围" << entry->lowerbound << " ~ " << entry->upperbound << endl;
                         outputFile << node->name << " 数组类型下标越界错误" << "     下标范围" << entry->lowerbound << " ~ " << entry->upperbound << endl;
                     }
@@ -806,6 +806,7 @@ void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, S
 
         // 赋值语句的左右两边类型不相容————赋值语句中，表达式中有类型不同的变量
         // 赋值语句左端不是变量标识符
+        // 表达式中运算符的分量的类型不相容 
         if (isassignk == 1) {
             SymbolEntry* entry1 = nullptr;
             SymbolEntry* entry2 = nullptr;
@@ -846,11 +847,16 @@ void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, S
                             }
                         }
                     }
+                    
+                    // 处理常量节点
+                    if (node->parent->children[k]->name == "const"){
+
+                    }
 
                     if (entry1 && entry2) {
                         if (entry1->type != entry2->type) {
-                            cout << node->parent->children[0]->name << " 和 " << node->parent->children[k]->name << " 类型不匹配，不能赋值" << endl;
-                            outputFile << node->parent->children[0]->name << " 和 " << node->parent->children[k]->name << " 类型不匹配，不能赋值" << endl;
+                            cout << node->parent->children[0]->name << " 和 " << node->parent->children[k]->name << " 赋值语句的左右两边类型不相容" << endl;
+                            outputFile << node->parent->children[0]->name << " 和 " << node->parent->children[k]->name << " 赋值语句的左右两边类型不相容" << endl;
                         }
                     }
                     k++;
