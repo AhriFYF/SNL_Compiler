@@ -821,7 +821,8 @@ void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, S
 
 
 
-        // 过程调用中 ，形实参类型不匹配
+        // 过程调用中，形实参类型不匹配
+        // 过程调用中，形实参个数不相同
         if (iscallk == 1) {
             SymbolEntry* entry1 = nullptr;
             SymbolEntry* entry2 = nullptr;
@@ -864,6 +865,11 @@ void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, S
                             procIndex++;
                         }
                         int paramIndex = paramvector[procIndex].size() - 1 - k; // 实参在形参中的索引
+                        if (paramIndex < 0 || paramIndex >= paramvector[procIndex].size()) {
+                            cout << "实参个数与形参个数不匹配" << endl;
+                            outputFile << "实参个数与形参个数不匹配" << endl;
+                            break; // 跳出循环
+                        }
                         if (paramvector[procIndex][paramIndex] != entry2->type) {
                             cout << "过程调用 " << node->parent->children[0]->name << " 中的实参 " << node->parent->children[k]->name << " 类型与形参类型不匹配" << endl;
                             outputFile << "过程调用 " << node->parent->children[0]->name << " 中的实参 " << node->parent->children[k]->name << " 类型与形参类型不匹配" << endl;
@@ -871,6 +877,12 @@ void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, S
                     }
                     k++;
                 }
+                /*
+                if (node->parent->children.size() - 1 != paramvector[procnum].size()) {
+                    cout << "过程调用 " << node->parent->children[0]->name << " 中的实参个数与形参个数不匹配" << endl;
+                    outputFile << "过程调用 " << node->parent->children[0]->name << " 中的实参个数与形参个数不匹配" << endl;
+                }
+                */
             }
         }
 
