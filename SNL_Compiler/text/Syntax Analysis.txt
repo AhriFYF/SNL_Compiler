@@ -20,6 +20,8 @@ Prok
                     ExpK a IdK
                     ExpK c3 IdK
                 StmtK AssignK
+                    ExpK a IdK
+                StmtK AssignK
                     ExpK b IdK
                     ExpK [ IdK
                     ExpK 100 IdK
@@ -33,14 +35,14 @@ Prok
         StmtK READ
             ExpK v1 IdK
         StmtK IF
-            ExpK v1 IdK
-            ExpK OP <
+            ExpK v2 IdK
+            ExpK OP +
             ExpK const 10
             StmtK THEN
                 ExpK v1 IdK
                 ExpK v1 IdK
                 ExpK OP +
-                ExpK const 1
+                ExpK const 10
             StmtK ELSE
                 ExpK v1 IdK
                 ExpK v1 IdK
@@ -48,4 +50,5 @@ Prok
                 ExpK const 10
         StmtK CALL
             ExpK q IdK
-            ExpK v1 IdK
+            ExpK c3 IdK
+            ExpK v2 IdK

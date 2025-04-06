@@ -47,6 +47,10 @@ CHAR,a
 ASSIGN,:=
 ID,c3
 SEMI,;
+NUM,1
+ASSIGN,:=
+CHAR,a
+SEMI,;
 CHAR,b
  LMIDPAREN,[
 UNDERANGE,100
@@ -70,8 +74,8 @@ ID,v1
 RPAREN,)
 SEMI,;
 reserved word,IF
-ID,v1
-LT,<
+ID,v2
+PLUS,+
 NUM,10
 reserved word,THEN
 ID,v1
@@ -79,7 +83,7 @@ ASSIGN,:=
 ID,v1
 PLUS,+
 COMMA,'
-NUM,1
+NUM,10
 COMMA,'
 reserved word,ELSE
 ID,v1
@@ -91,8 +95,11 @@ reserved word,FI
 SEMI,;
 CHAR,q
 LPAREN,(
-ID,v1
+ID,c3
+JSP1,,
+ID,v2
 RPAREN,)
+SEMI,;
 reserved word,END
 DOT,.
 EOF

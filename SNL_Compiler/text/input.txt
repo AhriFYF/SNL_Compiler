@@ -10,15 +10,16 @@ var integer a;
 begin
  a:=i;
  a:=c3;{赋值语句的左右两边类型不相容}
+ 1:=a;{赋值语句左端不是变量标识符}
  b[100]:=10;{数组类型下标越界错误}
  a();{标识符为非期望的标识符类别}
  write(a)
 end
 begin
  read(v1);{无声明的标识符}
- if v1<10 
-then v1:=v1+'1'
-else v1:=v1-10
-fi;
- q(v1)
+ if v2+10 {if 和while 语句的条件部分不是bool类型}
+ then v1:=v1+'10'
+ else v1:=v1-10
+ fi;
+ q(c3, v2);{形实参类型不匹配  +  形实参个数不相同}
 end.

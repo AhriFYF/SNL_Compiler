@@ -10,6 +10,8 @@
         "string": "cpp",
         "iostream": "cpp",
         "xhash": "cpp",
-        "xutility": "cpp"
+        "xutility": "cpp",
+        "system_error": "cpp",
+        "xlocale": "cpp"
     }
 }

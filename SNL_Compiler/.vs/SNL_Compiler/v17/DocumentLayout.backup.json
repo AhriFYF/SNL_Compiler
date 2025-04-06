@@ -49,8 +49,7 @@
               "RelativeToolTip": "..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\include\\__msvc_string_view.hpp",
               "ViewState": "AgIAAKUBAAAAAAAAAAAewLIBAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-04-05T07:07:56.292Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-05T07:07:56.292Z"
             },
             {
               "$type": "Document",
@@ -62,8 +61,7 @@
               "RelativeToolTip": "main.h",
               "ViewState": "AgIAANEAAAAAAAAAAADgvzMAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-04-01T01:52:37.489Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-01T01:52:37.489Z"
             },
             {
               "$type": "Document",
@@ -75,8 +73,7 @@
               "RelativeToolTip": "SNL_Compiler.cpp",
               "ViewState": "AgIAAEcAAAAAAAAAAAAcwF4AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-03-30T09:23:58.615Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-30T09:23:58.615Z"
             },
             {
               "$type": "Document",
@@ -110,7 +107,7 @@
               "RelativeDocumentMoniker": "Semantic_Analysis.cpp",
               "ToolTip": "C:\\Users\\Fangyufan\\OneDrive\\Desktop\\Compiler\\SNL_Compiler\\Semantic_Analysis.cpp",
               "RelativeToolTip": "Semantic_Analysis.cpp",
-              "ViewState": "AgIAAOsCAAAAAAAAAAAcwOwCAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAK4DAAAAAAAAAAAcwLsDAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-03-30T09:23:58.868Z",
               "EditorCaption": ""
