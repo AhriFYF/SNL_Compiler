@@ -191,6 +191,10 @@ extern int currentOffset;
 extern bool isstmtk;       //是否是语句节点
 extern bool isassignk;     //是否是赋值节点
 extern int enterdepth;     //当前层级深度
+extern int isparam; // 是否是参数节点
+extern int num; // 记录参数个数
+extern int procnum; // 记录过程个数
+extern vector<vector<string>> paramvector; // 参数节点栈
 
 //分界符的命名+ | - | *| / | ( | ) | [ | ] | ; | . | < | : | = | ' | := | > | " | ,
 extern char SingleDelimiter[18][20];

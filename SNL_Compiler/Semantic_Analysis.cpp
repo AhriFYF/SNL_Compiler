@@ -311,6 +311,10 @@ bool SymbolTable::Enter(const string& id, const string& type, SymbolEntry** entr
     return true;
 }
 
+int isparam = 0; // 是否是参数节点
+int num = 0; // 记录参数个数
+int procnum = 0; // 记录过程个数
+vector<vector<string>> paramvector(1); // 参数节点栈
 // 打印符号表
 void SymbolTable::PrintSymbolTable(ofstream& outputFile) {
     cout << "===== Symbol Table (Max Level: " << maxlevel << ") =====" << endl;
@@ -329,10 +333,16 @@ void SymbolTable::PrintSymbolTable(ofstream& outputFile) {
                 outputFile << "DEFINE     " << "Name: " << p->name << " | Type: " << p->type << endl;
             }
             else if (p->offset == -4) {                             //过程
+                isparam = 0; // 结束参数节点
+                paramvector[procnum].push_back(p->name);    // 记录过程名
+                procnum++; // 记录过程个数
+                paramvector.emplace_back(); // 添加一个新的空 vector
                 cout << "NULL | procKind | Type: " << p->type << " | Name: " << p->name << endl;
                 outputFile << "NULL | procKind | Type: " << p->type << " | Name: " << p->name << endl;
             }
             else if (!p->procName.empty()) {                        //参数
+                isparam = 1; // 开始参数节点
+                paramvector.back().push_back(p->type); // 在最新的 vector 中添加元素
                 if (!p->type.empty() && p->type.back() == '^') {
                     cout << "Parameter\tType: " << p->type << " | varKind | indir | Name: " << p->name << " | Offset: " << p->offset << endl;
                     outputFile << "Parameter\tType: " << p->type << " | varKind | indir | Name: " << p->name << " | Offset: " << p->offset << endl;
@@ -671,10 +681,10 @@ void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, S
         isassignk = 0; // 不是赋值节点
     }
 
-    if (node->type == "StmtK" && node->type == "CALL") {
+    if (node->type == "StmtK" && node->name == "CALL") {
         iscallk = 1; // 调用节点标志
     }
-    else if(node->type == "StmtK" && node->type != "CALL") {
+    else if(node->type == "StmtK" && node->name != "CALL") {
         iscallk = 0; // 不是调用节点
     }
 
@@ -849,9 +859,14 @@ void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, S
                     }
 
                     if (entry1 && entry2) {
-                        if (entry1 != entry2) {
-                            cout << node->parent->children[0]->name << " 和 " << node->parent->children[k]->name << " 形实参类型不匹配" << endl;
-                            outputFile << node->parent->children[0]->name << " 和 " << node->parent->children[k]->name << " 形实参类型不匹配" << endl;
+                        int procIndex = 0;
+                        while(paramvector[procIndex].back() != node->parent->children[0]->name) {
+                            procIndex++;
+                        }
+                        int paramIndex = paramvector[procIndex].size() - 1 - k; // 实参在形参中的索引
+                        if (paramvector[procIndex][paramIndex] != entry2->type) {
+                            cout << "过程调用 " << node->parent->children[0]->name << " 中的实参 " << node->parent->children[k]->name << " 类型与形参类型不匹配" << endl;
+                            outputFile << "过程调用 " << node->parent->children[0]->name << " 中的实参 " << node->parent->children[k]->name << " 类型与形参类型不匹配" << endl;
                         }
                     }
                     k++;
