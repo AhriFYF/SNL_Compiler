@@ -23,6 +23,9 @@ Prok
                     ExpK const 1 INTC
                     ExpK a IdK
                 StmtK AssignK
+                    ExpK const 2 CHARC
+                    ExpK a IdK
+                StmtK AssignK
                     ExpK b IdK
                     ExpK [ IdK
                     ExpK const 100 INTC
