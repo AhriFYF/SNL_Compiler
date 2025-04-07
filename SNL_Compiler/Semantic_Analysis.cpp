@@ -751,21 +751,20 @@ void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, S
             SymbolEntry* entry1 = nullptr;
             SymbolEntry* entry2 = nullptr;
             // 找到常数children
-            int t = 0;
-            while (node->parent && !node->parent->children.empty() && t < node->parent->children.size()) {
-                if (node->parent->children[t]->name == "const" && node->parent->children[t]->varType == node->varType) {
+            while (node->parent && !node->parent->children.empty() && childnum < node->parent->children.size()) {
+                if (node->parent->children[childnum]->name == "const" && node->parent->children[childnum]->varType == node->varType) {
                     break;
                 }
-                t++;
+                childnum++;
             }
-            if(node->parent->children.size()>=3 && node->parent->children[t-1]->name == "[") {
+            if(node->parent->children.size()>=3 && node->parent->children[childnum-1]->name == "[") {
                 // 跳过数组节点
             }
             else {
                 // 第t个children和第k个children进行类型比较
                 int k = 0; 
                 while (node->parent && !node->parent->children.empty() && k < node->parent->children.size()) {
-                    if (k == t) {
+                    if (k == childnum) {
                         k++;
                         continue;  // 跳过常数节点
                     }
@@ -797,13 +796,13 @@ void semanticAnalysis(Node* node, SymbolTable* symTable, ofstream& outputFile, S
                                     !(node->consttype == "INTC" && entry2->name == "INTEGER") &&
                                     !(node->consttype == "CHARC" && entry2->name == "CHAR")
                                     ){
-                                        cout << node->parent->children[t]->varType << " 和 " << node->parent->children[k]->name << " 表达式中运算符的分量的类型不相容" << endl;
-                                        outputFile << node->parent->children[t]->varType << " 和 " << node->parent->children[k]->name << " 表达式中运算符的分量的类型不相容" << endl;
+                                        cout << node->consttype << " " << node->varType << " 和 " << node->parent->children[k]->name << " 表达式中运算符的分量的类型不相容" << endl;
+                                        outputFile << node->consttype << " "  << node->varType << " 和 " << node->parent->children[k]->name << " 表达式中运算符的分量的类型不相容" << endl;
                                     }
                             }
                             else{
-                                cout << node->parent->children[t]->varType << " 和 " << node->parent->children[k]->name << " 表达式中运算符的分量的类型不相容" << endl;
-                                outputFile << node->parent->children[t]->varType << " 和 " << node->parent->children[k]->name << " 表达式中运算符的分量的类型不相容" << endl;
+                                cout << node->consttype << " " << node->varType << " 和 " << node->parent->children[k]->name << " 表达式中运算符的分量的类型不相容" << endl;
+                                outputFile << node->consttype << " " << node->varType << " 和 " << node->parent->children[k]->name << " 表达式中运算符的分量的类型不相容" << endl;
                             }
                         }
                     }
