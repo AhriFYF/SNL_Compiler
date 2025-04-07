@@ -20,6 +20,7 @@ Prok
                     ExpK a IdK
                     ExpK c3 IdK
                 StmtK AssignK
+                    ExpK const 1 INTC
                     ExpK a IdK
                 StmtK AssignK
                     ExpK b IdK
@@ -37,7 +38,7 @@ Prok
         StmtK IF
             ExpK v2 IdK
             ExpK OP +
-            ExpK 10 IdK
+            ExpK const 10 INTC
             StmtK THEN
                 ExpK v1 IdK
                 ExpK v1 IdK

@@ -18,9 +18,6 @@
     <ClCompile Include="SNL_Compiler.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Lexical_Analysis.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="Syntax_Analysis.cpp">
       <Filter>源文件</Filter>
     </ClCompile>

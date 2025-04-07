@@ -1,4 +1,5 @@
 ﻿  Semantic_Analysis.cpp
-C:\Users\Fangyufan\OneDrive\Desktop\Compiler\SNL_Compiler\Semantic_Analysis.cpp(906,40): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
-C:\Users\Fangyufan\OneDrive\Desktop\Compiler\SNL_Compiler\Semantic_Analysis.cpp(974,97): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
-  SNL_Compiler.vcxproj -> C:\Users\Fangyufan\OneDrive\Desktop\Compiler\SNL_Compiler\x64\Debug\SNL_Compiler.exe
+D:\vs2022b\VC\Tools\MSVC\14.39.33519\include\filesystem(12): warning STL4038: The contents of <filesystem> are available only with C++17 or later.
+D:\桌面\编译原理课程设计\compiler\SNL_Compiler\SNL_Compiler\Semantic_Analysis.cpp(975,40): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+D:\桌面\编译原理课程设计\compiler\SNL_Compiler\SNL_Compiler\Semantic_Analysis.cpp(1043,97): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+  SNL_Compiler.vcxproj -> D:\桌面\编译原理课程设计\compiler\SNL_Compiler\SNL_Compiler\x64\Debug\SNL_Compiler.exe

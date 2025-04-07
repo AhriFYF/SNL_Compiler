@@ -1,7 +1,7 @@
 program p
 type t1 = integer;
 var integer v2;
-var integer v2;{鏍囪瘑绗︾殑閲嶅瀹氫箟}
+var integer v2;{标识符的重复定义}
 char c3;
 array [1..10] of integer b;
 procedure q
@@ -9,17 +9,17 @@ procedure q
 var integer a;
 begin
  a:=i;
- a:=c3;{璧嬪�艰鍙ョ殑宸﹀彸涓よ竟绫诲瀷涓嶇浉瀹箎
- 1:=a;{璧嬪�艰鍙ュ乏绔笉鏄彉閲忔爣璇嗙}
- b[100]:=10;{鏁扮粍绫诲瀷涓嬫爣瓒婄晫閿欒}
- a();{鏍囪瘑绗︿负闈炴湡鏈涚殑鏍囪瘑绗︾被鍒珆
+ a:=c3;{赋值语句的左右两边类型不相容}
+ 1:=a;{赋值语句左端不是变量标识符}
+ b[100]:=10;{数组类型下标越界错误}
+ a();{标识符为非期望的标识符类别}
  write(a)
 end
 begin
- read(v1);{鏃犲０鏄庣殑鏍囪瘑绗
- if v2+10 {if 鍜寃hile 璇彞鐨勬潯浠堕儴鍒嗕笉鏄痓ool绫诲瀷}
+ read(v1);{无声明的标识符}
+ if v2+10 {if 和while 语句的条件部分不是bool类型}
  then v1:=v1+'10'
  else v1:=v1-10
  fi;
- q(c3, v2);{褰㈠疄鍙傜被鍨嬩笉鍖归厤  +  褰㈠疄鍙備釜鏁颁笉鐩稿悓}
+ q(c3, v2);{形实参类型不匹配  +  形实参个数不相同}
 end.

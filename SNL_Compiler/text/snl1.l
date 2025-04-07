@@ -345,7 +345,7 @@ void main() {
     FILE* input_file = fopen(input_path, "r");
     if (!input_file) {
         fprintf(stderr, "[ERROR] : %s\n", input_path);
-        perror("è¯¦ç»†ä¿¡æ¯");
+        perror("´íÎó");
         exit(EXIT_FAILURE);
     }
     yyin = input_file;
@@ -354,7 +354,7 @@ void main() {
     if (!token_file) {
         fclose(input_file); 
         fprintf(stderr, "[ERROR] : %s\n", output_path);
-        perror("è¯¦ç»†ä¿¡æ¯");
+        perror("´íÎó");
         exit(EXIT_FAILURE);
     }
 

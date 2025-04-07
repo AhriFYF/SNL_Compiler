@@ -1,0 +1,24 @@
+===== Symbol Table (Max Level: 1) =====
+--- Level 1 ---
+Type: INTEGER | varKind | dir | Name: a | Offset: 1
+Parameter	Type: INTEGER | varKind | dir | Name: i | Offset: 0
+--- Level 0 ---
+NULL | procKind | Type: PROCEDURE | Name: q
+Array	Type: INTEGER | varKind | dir | Name: b | Offset: 3
+Type: CHAR | varKind | dir | Name: c3 | Offset: 2
+Type: INTEGER | varKind | dir | Name: v2 | Offset: 1
+Type: INTEGER | varKind | dir | Name: v2 | Offset: 0
+DEFINE     Name: t1 | Type: INTEGER
+Type: PROGRAM | Name: p
+===================================================
+
+
+Type: PROGRAM | Name: p | Level: 0
+Type: DEFINE | Name: t1 | Level: 0
+Type: VARIABLE | Name: v2 | Level: 0
+Type: VARIABLE | Name: v2 | Level: 0
+Type: VARIABLE | Name: c3 | Level: 0
+Type: ARRAY | Name: b | Level: 0
+Type: PROCEDURE | Name: q | Level: 0
+Type: PARAMETER | Name: i | Level: 1
+Type: VARIABLE | Name: a | Level: 1
