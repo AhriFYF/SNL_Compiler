@@ -18,16 +18,6 @@ int debugtest = 0;	   // 用来调试
 int maxlevel = 0;	   // 最大层次
 int currentOffset = 0; // 偏移量
 
-// 分界符的命名+ | - | *| / | ( | ) | [ | ] | ; | . | < | : | = | ' | := | > | " | ,
-char SingleDelimiter[18][20] = {"PLUS", "MINUS", "TIMES", "OVER", "LPAREN", "RPAREN",
-								" LMIDPAREN", "RMIDPAREN", "SEMI", "DOT", "LT", "COLON", "EQ", "COMMA", "ASSIGN", "RT", "SY", "JSP1"};
-
-// 保留字的命名,为了实现映射关系
-string reservedWords[21] = {"program", "type", "var", "procedure", "begin", "end", "array", "of", "record", "if", "then", "else",
-							"fi", "while", "do", "endwh", "read", "write", "return", "integer", "char"};
-string reservedWords1[21] = {"PROGRAM", "TYPE", "VAR", "PROCEDURE", "BEGIN", "END", "ARRAY", "OF", "RECORD", "IF", "THEN", "ELSE",
-							 "FI", "WHILE", "DO", "ENDWH", "READ", "WRITE", "RETURN", "INTEGER", "CHAR"};
-
 // 从文件读取 SNL 源代码
 string readFile(const string &filename)
 {
@@ -111,13 +101,21 @@ int main()
 
 	std::cout << "成功加载 " << token.size() << " 个Token" << std::endl;
 
-	// 词法分析
-
 	cout << "\n词法分析结果已写入: " << tokenfile << endl;
 	printf("\n");
 	system("pause");
 	// 语法分析器
 	Treenode *root = program(Syntax);
+	if (root)
+	{
+		cout << "\n语法分析结果已写入: " << Syntaxfile << endl;
+		printf("\n");
+		system("pause");
+	}
+	else
+	{
+		cout << "\n语法错误！\n";
+	}
 
 	// 语义分析-符号表管理
 	Node *syntaxTree = parseSyntaxTree(Syntaxfile); // 解析语法树

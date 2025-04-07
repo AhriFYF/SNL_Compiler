@@ -34,7 +34,6 @@ Treenode *program(ofstream &outputFile)
 		root->nodekind = "Prok"; // 节点类型为根节点
 		if (gettoken(subscript).value1 == "DOT")
 		{
-			cout << "语法分析结果已写入: " << Syntaxfile << endl;
 			return root;
 		}
 		else
