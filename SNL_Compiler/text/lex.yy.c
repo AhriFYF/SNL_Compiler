@@ -1972,6 +1972,8 @@ void main() {
     fclose(input_file);
     fclose(token_file);
 
+    system("pause");
+
     print_all_tokens();
 
     for (int i = 0; i < token_count; i++) {
