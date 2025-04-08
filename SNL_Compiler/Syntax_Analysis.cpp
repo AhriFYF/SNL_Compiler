@@ -477,18 +477,19 @@ Treenode *stmt(ofstream &outputFile)
 						cout << "StmtK" << " " << "THEN" << endl;
 						outputFile << "StmtK" << " " << "THEN" << endl;
 						subscript = subscript + 1;
-						tmp1->child[2] = assign1(outputFile);
+						size2 = size2 - 1;
+						tmp1->child[2] = stmt(outputFile);
 						size2 = size2 - 1;
 						// 如果有else
 						if (token[subscript].value2 == "ELSE")
 						{
-							size2 = size2 + 1;
+							size2 = size2 + 2;
 							printq(size2, outputFile);
+							subscript = subscript + 1;
 							cout << "StmtK" << " " << "ELSE" << endl;
 							outputFile << "StmtK" << " " << "ELSE" << endl;
-							subscript = subscript + 1;
-							tmp1->child[3] = assign1(outputFile);
 							size2 = size2 - 1;
+							tmp1->child[3] = stmt(outputFile);
 						}
 						// 对于FI的处理
 						subscript = subscript + 2;
@@ -733,8 +734,6 @@ Treenode *if1(ofstream &outputFile)
 					cout << "ExpK" << " " << token[subscript].value2 << " " << "IdK" << endl;
 					outputFile << "ExpK" << " " << token[subscript].value2 << " " << "IdK" << endl;
 				}
-				// cout << "ExpK" << " " << token[subscript].value2 << " " << "IdK" << endl;
-				// outputFile << "ExpK" << " " << token[subscript].value2 << " " << "IdK" << endl;
 			}
 			subscript = subscript + 1;
 			size2 = size2 - 1;

@@ -13,6 +13,12 @@ reserved word,VAR
 reserved word,INTEGER
 ID,v2
 SEMI,;
+reserved word,INTEGER
+ID,j
+SEMI,;
+reserved word,INTEGER
+ID,i
+SEMI,;
 reserved word,CHAR
 ID,c3
 SEMI,;
@@ -95,19 +101,6 @@ reserved word,READ
 LPAREN,(
 ID,v1
 RPAREN,)
-SEMI,;
-reserved word,WHILE
-ID,i
-LT,<
-ID,j
-reserved word,DO
-ID,v2
-ASSIGN,:=
-ID,v2
-PLUS,+
-INTC,1
-SEMI,;
-reserved word,ENDWH
 SEMI,;
 reserved word,IF
 ID,v2

@@ -67,7 +67,7 @@ int main()
 	printf("\n");
 	system("pause");
 	WinExec("text\\a.exe", SW_SHOWNORMAL);
-	
+	Sleep(1000);
 	printf("\n");
 	system("pause");
 

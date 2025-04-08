@@ -4,10 +4,12 @@ Type: INTEGER | varKind | dir | Name: a | Offset: 1
 Parameter	Type: INTEGER | varKind | dir | Name: i | Offset: 0
 --- Level 0 ---
 NULL | procKind | Type: PROCEDURE | Name: q
-Array	Type: INTEGER | varKind | dir | Name: b | Offset: 5
-Type: CHAR | varKind | dir | Name: c5 | Offset: 4
-Type: CHAR | varKind | dir | Name: c4 | Offset: 3
-Type: CHAR | varKind | dir | Name: c3 | Offset: 2
+Array	Type: INTEGER | varKind | dir | Name: b | Offset: 7
+Type: CHAR | varKind | dir | Name: c5 | Offset: 6
+Type: CHAR | varKind | dir | Name: c4 | Offset: 5
+Type: CHAR | varKind | dir | Name: c3 | Offset: 4
+Type: INTEGER | varKind | dir | Name: i | Offset: 3
+Type: INTEGER | varKind | dir | Name: j | Offset: 2
 Type: INTEGER | varKind | dir | Name: v2 | Offset: 1
 Type: INTEGER | varKind | dir | Name: v2 | Offset: 0
 DEFINE     Name: t1 | Type: INTEGER
@@ -19,6 +21,8 @@ Type: PROGRAM | Name: p | Level: 0
 Type: DEFINE | Name: t1 | Level: 0
 Type: VARIABLE | Name: v2 | Level: 0
 Type: VARIABLE | Name: v2 | Level: 0
+Type: VARIABLE | Name: j | Level: 0
+Type: VARIABLE | Name: i | Level: 0
 Type: VARIABLE | Name: c3 | Level: 0
 Type: VARIABLE | Name: c4 | Level: 0
 Type: VARIABLE | Name: c5 | Level: 0

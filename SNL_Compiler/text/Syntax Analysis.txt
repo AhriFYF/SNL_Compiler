@@ -5,6 +5,8 @@ Prok
     VAR
         Deck INTEGER v2
         Deck INTEGER v2
+        Deck INTEGER j
+        Deck INTEGER i
         Deck CHAR c3
         Deck CHAR c4
         Deck CHAR c5
@@ -51,25 +53,18 @@ Prok
             ExpK c4 IdK
         StmtK READ
             ExpK v1 IdK
-        StmtK WHILE
-            ExpK i IdK
-            OpK <
-            ExpK j IdK
-            StmtK AssignK
-                ExpK v2 IdK
-                ExpK v2 IdK
-                ExpK OP +
-                ExpK const 1 INTC
         StmtK IF
             ExpK v2 IdK
             ExpK OP +
             ExpK const 10 INTC
             StmtK THEN
+            StmtK AssignK
                 ExpK v1 IdK
                 ExpK v1 IdK
                 ExpK OP +
                 ExpK const 10 INTC
             StmtK ELSE
+            StmtK AssignK
                 ExpK v1 IdK
                 ExpK v1 IdK
                 ExpK OP -
