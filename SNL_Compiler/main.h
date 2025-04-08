@@ -267,6 +267,8 @@ Treenode *probody(ofstream &outputFile);	  // ¹ı³ÌÉùÃ÷ÖĞµÄº¯ÊıÌå,ºóÃæ¿ÉÒÔÖ±½ÓÓÃ×
 Treenode *stmt(ofstream &outputFile);		  // Éú³ÉÒ»¸öÓï¾ä½Úµã
 Treenode *assign1(ofstream &outputFile);	  // Éú³É¸³Öµ±í´ïÊ½
 Treenode *write1(ofstream &outputFile);		  // Éú³É¶ÁĞ´±í´ïÊ½
+Treenode* while_condition(ofstream& outputFile);
+Treenode* while_body(ofstream& outputFile);
 Treenode *read1(ofstream &outputFile);		  // Éú³É¶ÁĞ´±í´ïÊ½
 Treenode *if1(ofstream &outputFile);		  // Éú³ÉÑ¡Ôñ±í´ïÊ½
 

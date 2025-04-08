@@ -6,6 +6,8 @@ Prok
         Deck INTEGER v2
         Deck INTEGER v2
         Deck CHAR c3
+        Deck CHAR c4
+        Deck CHAR c5
         Deck ARRAY [ 1 .. 10 ] OF INTEGER b
     PROCEDURE
         HDeck q
@@ -36,8 +38,28 @@ Prok
                 StmtK WRITE
                     ExpK a IdK
     StmLK
+        StmtK AssignK
+            ExpK c3 IdK
+            ExpK const a CHARC
+        StmtK AssignK
+            ExpK c4 IdK
+            ExpK const b CHARC
+        StmtK AssignK
+            ExpK c5 IdK
+            ExpK c3 IdK
+            ExpK OP +
+            ExpK c4 IdK
         StmtK READ
             ExpK v1 IdK
+        StmtK WHILE
+            ExpK i IdK
+            OpK <
+            ExpK j IdK
+            StmtK AssignK
+                ExpK v2 IdK
+                ExpK v2 IdK
+                ExpK OP +
+                ExpK const 1 INTC
         StmtK IF
             ExpK v2 IdK
             ExpK OP +

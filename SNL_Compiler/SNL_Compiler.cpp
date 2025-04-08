@@ -67,7 +67,7 @@ int main()
 	printf("\n");
 	system("pause");
 	WinExec("text\\a.exe", SW_SHOWNORMAL);
-	Sleep(1000);
+	
 	printf("\n");
 	system("pause");
 
@@ -132,6 +132,8 @@ int main()
 	printSymbolTable(Parsedsymboltable, Symboltable);							// 打印解析后的符号表
 	mainsemanticAnalysis(syntaxTree, symTable, Semantic, Parsedsymboltable, 0); // 语义分析
 	cout << "语义错误信息已写入: " << Semanticfile << endl;
+
+	system("pause");
 
 	Lexical.close();
 	Syntax.close();

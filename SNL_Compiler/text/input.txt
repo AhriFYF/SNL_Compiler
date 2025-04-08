@@ -3,6 +3,8 @@ type t1 = integer;
 var integer v2;
 var integer v2;{标识符的重复定义}
 char c3;
+char c4;
+char c5;
 array [1..10] of integer b;
 procedure q
 (integer i);
@@ -17,7 +19,13 @@ begin
  write(a)
 end
 begin
+  c3:='a';
+ c4:='b';
+ c5:=c3+c4;
  read(v1);{无声明的标识符}
+ while i<j do
+  v2:=v2+1;
+endwh;
  if v2+10 {if 和while 语句的条件部分不是bool类型}
  then v1:=v1+'10'
  else v1:=v1-10

@@ -435,48 +435,72 @@ Treenode *stmt(ofstream &outputFile)
 			}
 			else
 			{
-				if (token[subscript].value2 == "IF")
+				if (token[subscript].value2 == "WHILE")
 				{
-					// 说明是判断节点
+					// 说明是循环节点
 					Treenode *tmp1 = new Treenode;
 					tmp1->nodekind = "StmtK";
-					tmp1->specificnode.stmt = "IF";
-					subscript = subscript + 1;
+					tmp1->specificnode.stmt = "WHILE";
+					subscript = subscript + 1; // 跳过 WHILE
+
+					// 打印 WHILE 节点
 					size2 = size2 + 1;
 					printq(size2, outputFile);
-					cout << "StmtK" << " " << "IF" << endl;
-					outputFile << "StmtK" << " " << "IF" << endl;
-					// 继续生成选择节点if判断部分；
-					tmp1->child[0] = if1(outputFile);
-					// 打印then部分
-					size2 = size2 + 1;
-					printq(size2, outputFile);
-					cout << "StmtK" << " " << "THEN" << endl;
-					outputFile << "StmtK" << " " << "THEN" << endl;
-					subscript = subscript + 1;
-					tmp1->child[2] = assign1(outputFile);
-					size2 = size2 - 1;
-					// 如果有else
-					if (token[subscript].value2 == "ELSE")
-					{
-						size2 = size2 + 1;
-						printq(size2, outputFile);
-						cout << "StmtK" << " " << "ELSE" << endl;
-						outputFile << "StmtK" << " " << "ELSE" << endl;
-						subscript = subscript + 1;
-						tmp1->child[3] = assign1(outputFile);
-						size2 = size2 - 1;
-					}
-					// 对于FI的处理
-					subscript = subscript + 2;
-					// 别忘了一开始的if判断
+					cout << "StmtK" << " " << "WHILE" << endl;
+					outputFile << "StmtK" << " " << "WHILE" << endl;
+
+					// 处理循环条件和循环体
+					tmp1->child[0] = while_condition(outputFile); // 条件表达式
+					tmp1->child[1] = while_body(outputFile);	  // 循环体语句
+
 					size2 = size2 - 1;
 					return tmp1;
 				}
 				else
 				{
-					subscript = subscript + 1;
-					return NULL;
+					if (token[subscript].value2 == "IF")
+					{
+						// 说明是判断节点
+						Treenode *tmp1 = new Treenode;
+						tmp1->nodekind = "StmtK";
+						tmp1->specificnode.stmt = "IF";
+						subscript = subscript + 1;
+						size2 = size2 + 1;
+						printq(size2, outputFile);
+						cout << "StmtK" << " " << "IF" << endl;
+						outputFile << "StmtK" << " " << "IF" << endl;
+						// 继续生成选择节点if判断部分；
+						tmp1->child[0] = if1(outputFile);
+						// 打印then部分
+						size2 = size2 + 1;
+						printq(size2, outputFile);
+						cout << "StmtK" << " " << "THEN" << endl;
+						outputFile << "StmtK" << " " << "THEN" << endl;
+						subscript = subscript + 1;
+						tmp1->child[2] = assign1(outputFile);
+						size2 = size2 - 1;
+						// 如果有else
+						if (token[subscript].value2 == "ELSE")
+						{
+							size2 = size2 + 1;
+							printq(size2, outputFile);
+							cout << "StmtK" << " " << "ELSE" << endl;
+							outputFile << "StmtK" << " " << "ELSE" << endl;
+							subscript = subscript + 1;
+							tmp1->child[3] = assign1(outputFile);
+							size2 = size2 - 1;
+						}
+						// 对于FI的处理
+						subscript = subscript + 2;
+						// 别忘了一开始的if判断
+						size2 = size2 - 1;
+						return tmp1;
+					}
+					else
+					{
+						subscript = subscript + 1;
+						return NULL;
+					}
 				}
 			}
 		}
@@ -596,6 +620,82 @@ Treenode *read1(ofstream &outputFile)
 		subscript = subscript + 1;
 	}
 	return tmp1;
+}
+
+Treenode *while_condition(ofstream &outputFile)
+{
+	Treenode *cond_node = new Treenode;
+	cond_node->nodekind = "ExpK";
+	cond_node->specificnode.exp = "Condition"; // 自定义条件节点类型
+
+	// 处理条件中的操作符和操作数
+	while (token[subscript].value2 != "DO")
+	{
+		if (token[subscript].value1 == "ID" || token[subscript].value1 == "INTC")
+		{
+			// 生成操作数节点
+			Treenode *operand = new Treenode;
+			operand->nodekind = "ExpK";
+			operand->specificnode.exp = (token[subscript].value1 == "ID") ? "IdK" : "ConstK";
+			operand->value = token[subscript].value2;
+
+			// 打印操作数
+			printq(size2 + 1, outputFile);
+			cout << "ExpK " << operand->value << " " << operand->specificnode.exp << endl;
+			outputFile << "ExpK " << operand->value << " " << operand->specificnode.exp << endl;
+
+			cond_node->child[cond_node->idchild++] = operand;
+			subscript += 1;
+		}
+		else if (token[subscript].value1 == "LT")
+		{
+			// 生成操作符节点
+			Treenode *op_node = new Treenode;
+			op_node->nodekind = "OpK";
+			op_node->value = token[subscript].value2;
+
+			// 打印操作符
+			printq(size2 + 1, outputFile);
+			cout << "OpK " << op_node->value << endl;
+			outputFile << "OpK " << op_node->value << endl;
+
+			cond_node->child[cond_node->idchild++] = op_node;
+			subscript += 1;
+		}
+	}
+
+	return cond_node;
+}
+
+Treenode *while_body(ofstream &outputFile)
+{
+	if (token[subscript].value2 != "DO")
+	{
+		// 错误处理：缺少 DO 关键字
+		return NULL;
+	}
+	subscript += 1; // 跳过 DO
+
+	Treenode *body_node = new Treenode;
+	body_node->nodekind = "StmLK"; // 复用语句列表节点类型
+
+	// 解析循环体内的语句（支持多语句）
+	while (token[subscript].value2 != "ENDWH")
+	{
+		Treenode *stmt_node = stmt(outputFile);
+		if (stmt_node)
+		{
+			body_node->child[body_node->idchild++] = stmt_node;
+		}
+	}
+
+	subscript += 1; // 跳过 ENDWH
+	if (token[subscript].value1 == "SEMI")
+	{
+		subscript += 1; // 跳过可能的分号
+	}
+
+	return body_node;
 }
 
 // 生成if表达式

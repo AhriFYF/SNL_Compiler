@@ -16,6 +16,12 @@ SEMI,;
 reserved word,CHAR
 ID,c3
 SEMI,;
+reserved word,CHAR
+ID,c4
+SEMI,;
+reserved word,CHAR
+ID,c5
+SEMI,;
 reserved word,ARRAY
 LMIDPAREN,[
 INTC,1
@@ -71,10 +77,37 @@ ID,a
 RPAREN,)
 reserved word,END
 reserved word,BEGIN
+ID,c3
+ASSIGN,:=
+CHARC,a
+SEMI,;
+ID,c4
+ASSIGN,:=
+CHARC,b
+SEMI,;
+ID,c5
+ASSIGN,:=
+ID,c3
+PLUS,+
+ID,c4
+SEMI,;
 reserved word,READ
 LPAREN,(
 ID,v1
 RPAREN,)
+SEMI,;
+reserved word,WHILE
+ID,i
+LT,<
+ID,j
+reserved word,DO
+ID,v2
+ASSIGN,:=
+ID,v2
+PLUS,+
+INTC,1
+SEMI,;
+reserved word,ENDWH
 SEMI,;
 reserved word,IF
 ID,v2
