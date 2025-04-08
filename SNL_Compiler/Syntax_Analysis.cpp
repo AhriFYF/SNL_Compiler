@@ -656,8 +656,8 @@ Treenode *while_condition(ofstream &outputFile)
 
 			// ´òÓ¡²Ù×÷·û
 			printq(size2 + 1, outputFile);
-			cout << "OpK " << op_node->value << endl;
-			outputFile << "OpK " << op_node->value << endl;
+			cout << "ExpK " << "OP " << op_node->value << endl;
+			outputFile << "ExpK " << "OP " << op_node->value << endl;
 
 			cond_node->child[cond_node->idchild++] = op_node;
 			subscript += 1;
